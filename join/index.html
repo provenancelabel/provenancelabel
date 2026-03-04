@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join — Provenance Label Registry</title>
+    <meta name="description" content="Get a permanent, verifiable Provenance Label URL and embeddable badge. Member of the PLGen Registry.">
+    <link rel="stylesheet" href="/shared.css">
+    <style>
+        .join-hero {
+            padding: 72px 0 56px;
+            border-bottom: 1px solid var(--gray-mid);
+        }
+
+        .join-hero h1 {
+            font-size: 40px;
+            max-width: 560px;
+            margin-bottom: 20px;
+        }
+
+        .join-hero p {
+            font-size: 17px;
+            color: var(--gray-dark);
+            max-width: 500px;
+            margin-bottom: 0;
+        }
+
+        .plans {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 48px 0;
+        }
+
+        .plan {
+            border: 1px solid var(--gray-mid);
+            padding: 32px 28px;
+        }
+
+        .plan.featured {
+            border-color: var(--black);
+        }
+
+        .plan-eyebrow {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .plan-name {
+            font-family: var(--mono);
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .plan-price {
+            font-family: var(--mono);
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .plan-price span {
+            font-size: 14px;
+            font-weight: normal;
+            color: var(--gray-dark);
+        }
+
+        .plan-alt {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--gray-dark);
+            margin-bottom: 28px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 0 0 32px;
+            padding: 0;
+        }
+
+        .plan-features li {
+            font-family: var(--mono);
+            font-size: 13px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            gap: 10px;
+            align-items: baseline;
+            color: var(--gray-dark);
+        }
+
+        .plan-features li:last-child { border-bottom: none; }
+
+        .plan-features li::before {
+            content: "→";
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .plan-features li.yes {
+            color: var(--black);
+        }
+
+        .plan-cta {
+            display: block;
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            text-align: center;
+            padding: 14px 24px;
+            border: 1px solid var(--black);
+            color: var(--white);
+            background: var(--black);
+            transition: all 0.15s;
+        }
+
+        .plan-cta:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--white);
+        }
+
+        .plan-cta.ghost {
+            background: transparent;
+            color: var(--black);
+        }
+
+        .plan-cta.ghost:hover {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .how-it-works {
+            margin: 16px 0 48px;
+        }
+
+        .how-step {
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 20px;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--gray-light);
+            align-items: start;
+        }
+
+        .how-step:last-child { border-bottom: none; }
+
+        .how-num {
+            font-family: var(--mono);
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--gray-mid);
+            padding-top: 2px;
+        }
+
+        .how-content h3 { margin-top: 0; margin-bottom: 6px; font-size: 15px; }
+        .how-content p { font-size: 15px; color: var(--gray-dark); margin: 0; }
+
+        .badge-preview {
+            border: 1px solid var(--gray-mid);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0 36px;
+        }
+
+        .badge-preview-header {
+            background: var(--gray-light);
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-dark);
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--gray-mid);
+        }
+
+        .badge-preview-body {
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            background: #f7f5f2;
+        }
+
+        .pl-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+
+        .pl-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #7ec850;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .badge-caption {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--gray-dark);
+        }
+
+        .faq-item { padding: 24px 0; border-bottom: 1px solid var(--gray-light); }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-item h3 { margin-top: 0; margin-bottom: 8px; font-size: 15px; }
+        .faq-item p { font-size: 15px; color: var(--gray-dark); margin: 0; }
+
+        @media (max-width: 600px) {
+            .plans { grid-template-columns: 1fr; }
+            .join-hero h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">PROVENANCE LABEL</a>
+        <a href="/spec">Spec</a>
+        <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
+        <a href="/join" class="active">Join</a>
+    </nav>
+
+    <div class="page-wrap">
+
+        <section class="join-hero">
+            <div class="hero-eyebrow">PLGen Registry — Member Access</div>
+            <h1>A permanent record of your work</h1>
+            <p>Free labels are text-only. Members get a permanent URL, a public viewer page, and an embeddable badge — so your disclosure travels with your work.</p>
+        </section>
+
+        <h2>Plans</h2>
+
+        <div class="plans">
+            <div class="plan">
+                <div class="plan-eyebrow">Always free</div>
+                <div class="plan-name">Free</div>
+                <div class="plan-price">$0</div>
+                <div class="plan-alt">&nbsp;</div>
+                <ul class="plan-features">
+                    <li class="yes">PL ID (PL-XXXXXX)</li>
+                    <li class="yes">Plain-text label</li>
+                    <li class="yes">Unlimited labels</li>
+                    <li>Permanent URL</li>
+                    <li>Public viewer page</li>
+                    <li>Embeddable badge</li>
+                    <li>Label history</li>
+                </ul>
+                <a href="/" class="plan-cta ghost">Use for free →</a>
+            </div>
+
+            <div class="plan featured">
+                <div class="plan-eyebrow">Most popular</div>
+                <div class="plan-name">Member</div>
+                <div class="plan-price">$4 <span>/ month</span></div>
+                <div class="plan-alt">or $40 / year — 2 months free</div>
+                <ul class="plan-features">
+                    <li class="yes">PL ID (PL-XXXXXX)</li>
+                    <li class="yes">Plain-text label</li>
+                    <li class="yes">Unlimited labels</li>
+                    <li class="yes">Permanent URL</li>
+                    <li class="yes">Public viewer page</li>
+                    <li class="yes">Embeddable badge</li>
+                    <li class="yes">Label history</li>
+                </ul>
+                <a href="https://buy.stripe.com/fZufZh5gV4x6cO8gTp9MY01" class="plan-cta">Join monthly — $4/mo</a>
+                <a href="https://buy.stripe.com/7sY6oH24JbZy4hC1Yv9MY02" class="plan-cta ghost" style="margin-top:10px;">Join yearly — $40/yr</a>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2>How it works</h2>
+
+        <div class="how-it-works">
+            <div class="how-step">
+                <div class="how-num">01</div>
+                <div class="how-content">
+                    <h3>Pay once, get your API key</h3>
+                    <p>After checkout, you'll receive an email with your API key (<code>plg_live_...</code>). Save it — it's shown once.</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">02</div>
+                <div class="how-content">
+                    <h3>Tell your AI you're a member</h3>
+                    <p>At the start of a session, paste your key. The AI stores it and uses it automatically when you generate a label.</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">03</div>
+                <div class="how-content">
+                    <h3>Generate your label as usual</h3>
+                    <p>Say "PLGen this" or "generate my provenance label." The AI posts to the registry and returns your permanent URL and badge.</p>
+                </div>
+            </div>
+            <div class="how-step">
+                <div class="how-num">04</div>
+                <div class="how-content">
+                    <h3>Embed the badge anywhere</h3>
+                    <p>Drop the HTML badge into blog posts, READMEs, portfolios, or anywhere on the web. It links back to your permanent record.</p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2>The badge</h2>
+
+        <div class="badge-preview">
+            <div class="badge-preview-header">Live example — click opens the registry page</div>
+            <div class="badge-preview-body">
+                <a href="https://registry.provenancelabel.org" class="pl-badge" target="_blank" rel="noopener">
+                    <span class="pl-dot"></span>
+                    PL-000042
+                </a>
+                <span class="badge-caption">Links to a permanent public page with full label details, contribution bar, and embed code.</span>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <h2>FAQ</h2>
+
+        <div class="faq-item">
+            <h3>What happens after I pay?</h3>
+            <p>You'll get an email within seconds containing your API key and setup instructions. No account to create — the key is your identity.</p>
+        </div>
+        <div class="faq-item">
+            <h3>What if I lose my API key?</h3>
+            <p>Email shelton@empathylab.io and we'll issue a new one. Your label history is preserved.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Can I cancel anytime?</h3>
+            <p>Yes. Cancel in Stripe and your key stays active until the end of the billing period. Your existing labels and URLs remain permanently.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Do free-tier labels disappear?</h3>
+            <p>No — they stay in the registry. They just don't have public viewer pages. Upgrade anytime and your label history carries over.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Can I use this with any AI?</h3>
+            <p>Yes. Claude, ChatGPT, Gemini — anything that can follow instructions and make an HTTP request. The session prompt works with all of them.</p>
+        </div>
+
+        <hr class="section-divider">
+
+        <div style="text-align:center; padding: 16px 0 32px;">
+            <a href="https://buy.stripe.com/fZufZh5gV4x6cO8gTp9MY01" class="btn" style="margin-right:12px;">Join monthly — $4/mo</a>
+            <a href="https://buy.stripe.com/7sY6oH24JbZy4hC1Yv9MY02" class="btn btn-ghost">Join yearly — $40/yr</a>
+        </div>
+
+    </div>
+
+    <footer>
+        <span>Provenance Label v1.0 — CC BY 4.0 / MIT</span>
+        <span>
+            <a href="/spec">Spec</a> &nbsp;·&nbsp;
+            <a href="/join">Join</a> &nbsp;·&nbsp;
+            <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
+        </span>
+    </footer>
+
+</body>
+</html>
