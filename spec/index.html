@@ -1,229 +1,510 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLGen Syntax Specification — Provenance Label</title>
-    <link rel="stylesheet" href="../shared.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec — Provenance Label</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0f0f0f;
+      --white: #fafaf8;
+      --gray-100: #f0efeb;
+      --gray-300: #d4d2cb;
+      --gray-500: #8a8880;
+      --gray-700: #4a4845;
+      --accent: #1a1a1a;
+      --rule: #e0ddd6;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--white);
+      color: var(--black);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      border-bottom: 1px solid var(--rule);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: var(--black);
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.85rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+    .nav-links a:hover { color: var(--black); }
+    .nav-links a.active { color: var(--black); font-weight: 500; }
+
+    /* LAYOUT */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 2rem 8rem;
+    }
+
+    /* HEADER */
+    .page-header {
+      margin-bottom: 3.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .page-tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+    .page-sub {
+      font-size: 1.05rem;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+    .meta-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--gray-500);
+      letter-spacing: 0.04em;
+    }
+
+    /* SECTIONS */
+    section {
+      margin-bottom: 3.5rem;
+    }
+    h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 1rem;
+    }
+    h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 0.75rem;
+      margin-top: 1.75rem;
+    }
+    p {
+      color: var(--gray-700);
+      margin-bottom: 0.75rem;
+      line-height: 1.65;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    /* PRINCIPLE CALLOUT */
+    .principle {
+      border-left: 3px solid var(--black);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      background: var(--gray-100);
+    }
+    .principle p {
+      color: var(--black);
+      font-weight: 500;
+      margin: 0;
+    }
+    .principle span {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--gray-500);
+      font-weight: 400;
+      margin-top: 0.35rem;
+    }
+
+    /* LABEL DISPLAY */
+    .label-block {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      padding: 1.5rem 1.75rem;
+      border-radius: 2px;
+      margin: 1.25rem 0;
+      position: relative;
+    }
+    .label-block .label-rule {
+      color: var(--gray-500);
+    }
+    .label-block .label-key {
+      color: var(--gray-300);
+    }
+    .label-block .label-val {
+      color: var(--white);
+    }
+    .label-block .label-footer {
+      color: var(--gray-500);
+      margin-top: 0.5rem;
+    }
+    .label-short {
+      background: var(--gray-100);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      padding: 0.85rem 1.25rem;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      color: var(--gray-700);
+      margin: 1rem 0;
+      letter-spacing: 0.01em;
+    }
+
+    /* FIELDS TABLE */
+    .fields {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 1rem 0;
+    }
+    .fields th {
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      padding: 0.5rem 0.75rem 0.5rem 0;
+      border-bottom: 1px solid var(--rule);
+      font-weight: 500;
+    }
+    .fields td {
+      padding: 0.65rem 0.75rem 0.65rem 0;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+      color: var(--gray-700);
+      line-height: 1.45;
+    }
+    .fields td:first-child {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--black);
+      white-space: nowrap;
+      padding-right: 1.5rem;
+    }
+    .fields tr:last-child td { border-bottom: none; }
+    .badge-req {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--white);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+    }
+    .badge-opt {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--gray-300);
+      color: var(--gray-700);
+      padding: 0.15rem 0.4rem;
+      border-radius: 2px;
+    }
+
+    /* DEV BRIDGE */
+    .dev-bridge {
+      border: 1px solid var(--rule);
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .dev-bridge-text p {
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .dev-bridge-text strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+      color: var(--black);
+    }
+    .btn-dev {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--white);
+      padding: 0.65rem 1.25rem;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    .btn-dev:hover { opacity: 0.75; }
+
+    /* DIVIDER */
+    .section-rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 3rem 0;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--gray-500);
+      font-family: var(--mono);
+    }
+    footer a { color: var(--gray-500); text-decoration: none; }
+    footer a:hover { color: var(--black); }
+  </style>
 </head>
-<body class="spec">
+<body>
 
-    <nav>
-        <a href="/" class="logo">PROVENANCE LABEL</a>
-        <a href="/spec" class="active">Spec</a>
-        <a href="/join">Join</a>
-        <a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a>
-    </nav>
+  <nav>
+    <a href="/" class="nav-brand">PROVENANCE LABEL</a>
+    <ul class="nav-links">
+      <li><a href="/spec" class="active">Spec</a></li>
+      <li><a href="/join">Join</a></li>
+      <li><a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a></li>
+    </ul>
+  </nav>
 
-    <div class="page-wrap">
+  <main class="page">
 
-        <header class="spec-header">
-            <div class="spec-label">PLGen Syntax Specification</div>
-            <h1>The open standard for<br>provenance declaration</h1>
-            <div class="spec-meta">
-                <span>Version: 1.0</span>
-                <span>Status: Draft</span>
-                <span>Published: 2026-02-17</span>
-                <span>License: CC BY 4.0</span>
-            </div>
-        </header>
+    <!-- HEADER -->
+    <header class="page-header">
+      <p class="page-tag">Specification</p>
+      <h1>How a Provenance Label works</h1>
+      <p class="page-sub">A label is a short declaration: who made this, when, and how much of it came from a human versus an AI. That's it.</p>
+      <div class="meta-row">
+        <span class="meta-item">v1.0</span>
+        <span class="meta-item">Draft</span>
+        <span class="meta-item">Published 2026-02-17</span>
+        <span class="meta-item">CC BY 4.0</span>
+      </div>
+    </header>
 
-        <h2>Overview</h2>
-        <p>PLGen is a plain-text syntax for declaring the provenance of AI-assisted content. It is human-readable, tool-parseable, and implementation-agnostic. Any tool — a CLI, a website, a browser extension — can read or write a valid <code>.plgen</code> file using this specification.</p>
-        <p>Think of it like Markdown: a simple set of rules that does useful work across many contexts without requiring special software to understand.</p>
+    <!-- PRINCIPLE -->
+    <section>
+      <div class="principle">
+        <p>Disclosure, not judgment.</p>
+        <span>A Provenance Label makes no claim about quality. It simply answers: what happened here, and who is accountable? Like a nutrition label — informative, not prescriptive.</span>
+      </div>
+    </section>
 
-        <div class="notice">
-            <strong>Design Principle</strong>
-            PLGen is a disclosure format, not a quality certification. It makes no judgment about how much AI assistance is "too much." It simply asks: what happened, and who is accountable?
-        </div>
+    <!-- WHAT A LABEL LOOKS LIKE -->
+    <section>
+      <h2>What a label looks like</h2>
+      <p>Two formats. Same information. Use whichever fits your context.</p>
 
-        <h2>File Format</h2>
-        <ul class="rule-list">
-            <li>File extension: <code>.plgen</code></li>
-            <li>Encoding: UTF-8</li>
-            <li>One field per line, format: <code>key: value</code></li>
-            <li>Lines beginning with <code>#</code> are comments and are ignored</li>
-            <li><code>@provenance</code> directive must appear on line 1</li>
-        </ul>
+      <h3>Long — for articles, posts, documentation</h3>
+      <div class="label-block">
+        <div class="label-rule">─────────────────────────────────────</div>
+        <div><span class="label-key">PROVENANCE LABEL</span> <span class="label-val">v1.0</span></div>
+        <div class="label-rule">─────────────────────────────────────</div>
+        <div><span class="label-key">Author:&nbsp;&nbsp;</span><span class="label-val">Shelton Davis</span></div>
+        <div><span class="label-key">Date:&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="label-val">2026-02-17</span></div>
+        <div><span class="label-key">Human:&nbsp;&nbsp;&nbsp;</span><span class="label-val">65%</span></div>
+        <div><span class="label-key">AI:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="label-val">35%</span></div>
+        <div><span class="label-key">Tools:&nbsp;&nbsp;&nbsp;</span><span class="label-val">Claude Sonnet 4.6</span></div>
+        <div><span class="label-key">Note:&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="label-val">Concept and direction human. Draft and structure AI. Edited for voice.</span></div>
+        <div class="label-rule">─────────────────────────────────────</div>
+        <div class="label-footer">provenance-label.org/spec</div>
+      </div>
 
-        <h2>Fields</h2>
+      <h3>Short — for bylines, footers, social posts</h3>
+      <div class="label-short">
+        PL v1.0 | Shelton Davis | 2026-02-17 | Human 65% · AI 35% · Claude Sonnet 4.6
+      </div>
+    </section>
 
-        <table class="field-table">
-            <thead>
-                <tr>
-                    <th>Field</th>
-                    <th>Type</th>
-                    <th>Description</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>@provenance</code></td>
-                    <td>directive</td>
-                    <td>Version declaration. Must be line 1.</td>
-                    <td><span class="required-badge">Required</span></td>
-                </tr>
-                <tr>
-                    <td><code>author</code></td>
-                    <td>string</td>
-                    <td>Full name of the human accountable for the content.</td>
-                    <td><span class="required-badge">Required</span></td>
-                </tr>
-                <tr>
-                    <td><code>date</code></td>
-                    <td>YYYY-MM-DD</td>
-                    <td>Date of completion or publication.</td>
-                    <td><span class="required-badge">Required</span></td>
-                </tr>
-                <tr>
-                    <td><code>human</code></td>
-                    <td>integer 0–100</td>
-                    <td>Percentage of human contribution. Must sum to 100 with <code>ai</code>.</td>
-                    <td><span class="required-badge">Required</span></td>
-                </tr>
-                <tr>
-                    <td><code>ai</code></td>
-                    <td>integer 0–100</td>
-                    <td>Percentage of AI contribution. Must sum to 100 with <code>human</code>.</td>
-                    <td><span class="required-badge">Required</span></td>
-                </tr>
-                <tr>
-                    <td><code>tools</code></td>
-                    <td>string</td>
-                    <td>AI tool(s) used. Comma-separated if multiple.</td>
-                    <td><span class="optional-badge">Optional</span></td>
-                </tr>
-                <tr>
-                    <td><code>shared-by</code></td>
-                    <td>string</td>
-                    <td>Name of person republishing content they did not originally create.</td>
-                    <td><span class="optional-badge">Optional</span></td>
-                </tr>
-                <tr>
-                    <td><code>updated</code></td>
-                    <td>YYYY-MM-DD</td>
-                    <td>Date of most recent substantive revision.</td>
-                    <td><span class="optional-badge">Optional</span></td>
-                </tr>
-                <tr>
-                    <td><code>note</code></td>
-                    <td>string</td>
-                    <td>Single plain-language sentence describing the collaboration.</td>
-                    <td><span class="optional-badge">Optional</span></td>
-                </tr>
-                <tr>
-                    <td><code>ref</code></td>
-                    <td>URL or citation</td>
-                    <td>Source referenced during creation. Repeatable for multiple sources.</td>
-                    <td><span class="optional-badge">Optional</span></td>
-                </tr>
-            </tbody>
-        </table>
+    <hr class="section-rule">
 
-        <h2>Example</h2>
+    <!-- THE FIELDS -->
+    <section>
+      <h2>The fields</h2>
+      <p>A label has five required fields and several optional ones. Required fields make it a valid label. Optional fields add context.</p>
 
-        <pre><code><span class="comment"># PLGen v1.0 — provenance-label.org/spec</span>
-<span class="directive">@provenance</span> 1.0
-<span class="key">author:</span> <span class="value">Shelton Davis</span>
-<span class="key">date:</span> <span class="value">2026-02-17</span>
-<span class="key">human:</span> <span class="value">65</span>
-<span class="key">ai:</span> <span class="value">35</span>
-<span class="key">tools:</span> <span class="value">Claude Sonnet 4.6</span>
-<span class="key">note:</span> <span class="value">Concept and direction human. Draft and structure AI. Edited for voice.</span>
-<span class="key">ref:</span> <span class="value">https://provenance-label.org/spec</span></code></pre>
+      <h3>Required</h3>
+      <table class="fields">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>What it means</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>author</td>
+            <td>The human accountable for the content. Not the AI. Not the tool. You.</td>
+          </tr>
+          <tr>
+            <td>date</td>
+            <td>Date of completion or publication. Format: YYYY-MM-DD.</td>
+          </tr>
+          <tr>
+            <td>human</td>
+            <td>Your percentage of contribution. Must be an integer 0–100.</td>
+          </tr>
+          <tr>
+            <td>ai</td>
+            <td>AI's percentage. Must sum to 100 with <code>human</code>.</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <h2>Output Formats</h2>
-        <p>Any valid implementation must support at minimum the <code>--short</code> and <code>--long</code> output formats. <code>--json</code> is recommended for tool integrations.</p>
+      <h3>Optional</h3>
+      <table class="fields">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>What it means</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>tools</td>
+            <td>Which AI tools you used. Comma-separated if multiple.</td>
+          </tr>
+          <tr>
+            <td>note</td>
+            <td>One plain sentence describing how you worked together.</td>
+          </tr>
+          <tr>
+            <td>shared-by</td>
+            <td>If you're republishing someone else's work, your name goes here.</td>
+          </tr>
+          <tr>
+            <td>updated</td>
+            <td>Date of most recent substantive revision.</td>
+          </tr>
+          <tr>
+            <td>ref</td>
+            <td>Sources referenced during creation. Repeatable.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-        <div class="output-grid">
-            <div class="output-card">
-                <div class="flag">--short</div>
-                <p>Single-line badge. For inline use, footers, social posts.</p>
-            </div>
-            <div class="output-card">
-                <div class="flag">--long</div>
-                <p>Full disclosure block. For articles, documentation, reports.</p>
-            </div>
-            <div class="output-card">
-                <div class="flag">--json</div>
-                <p>Machine-readable export for tool integrations and APIs.</p>
-            </div>
-        </div>
+    <hr class="section-rule">
 
-        <div class="example-pair">
-            <div class="example-label">Short output</div>
-            <pre><code>PL v1.0 | Shelton Davis | 2026-02-17 | Human 65% · AI 35% · Claude Sonnet 4.6</code></pre>
+    <!-- HOW TO CALCULATE -->
+    <section>
+      <h2>How to calculate percentages</h2>
+      <p>Aim for honest, not perfect. No one is auditing your math. The point is a good-faith estimate of how the work actually came together.</p>
+      <p>Things to consider: Who initiated the content? Who made the decisions? Who edited, cut, and shaped the final output? What percentage of the final text, code, or image came directly from each contributor?</p>
+      <p>If you used an AI throughout a session, ask it to calculate at the end — it has context. You review, adjust, and approve. The final number is yours.</p>
+    </section>
 
-            <div class="example-label">Long output</div>
-            <pre><code>─────────────────────────────────────
-PROVENANCE LABEL v1.0
-─────────────────────────────────────
-Author:   Shelton Davis
-Date:     2026-02-17
-Human:    65%
-AI:       35%
-Tools:    Claude Sonnet 4.6
-Note:     Concept and direction human.
-          Draft and structure AI.
-          Edited for voice.
-─────────────────────────────────────
-provenance-label.org/spec</code></pre>
+    <hr class="section-rule">
 
-            <div class="example-label">JSON output</div>
-            <pre><code>{
-  "plgen": "1.0",
-  "author": "Shelton Davis",
-  "date": "2026-02-17",
-  "human": 65,
-  "ai": 35,
-  "tools": "Claude Sonnet 4.6",
-  "note": "Concept and direction human. Draft and structure AI. Edited for voice."
-}</code></pre>
-        </div>
+    <!-- WHERE TO PUT IT -->
+    <section>
+      <h2>Where to put it</h2>
+      <p>Wherever makes sense for your medium. Some common placements:</p>
+      <table class="fields">
+        <thead>
+          <tr>
+            <th>Medium</th>
+            <th>Where</th>
+            <th>Format</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Blog post</td>
+            <td>Footer or end of post</td>
+            <td>Long or short</td>
+          </tr>
+          <tr>
+            <td>Social post</td>
+            <td>Inline or as a note</td>
+            <td>Short</td>
+          </tr>
+          <tr>
+            <td>GitHub repo</td>
+            <td>README or .plgen file</td>
+            <td>Long or raw file</td>
+          </tr>
+          <tr>
+            <td>Academic paper</td>
+            <td>Acknowledgments or appendix</td>
+            <td>Long</td>
+          </tr>
+          <tr>
+            <td>Artwork</td>
+            <td>Artist statement or caption</td>
+            <td>Long</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
 
-        <h2>Validation Rules</h2>
-        <ul class="rule-list">
-            <li><code>@provenance</code> must appear on line 1 of the file</li>
-            <li><code>human</code> + <code>ai</code> must equal exactly 100</li>
-            <li><code>date</code> and <code>updated</code> must be valid YYYY-MM-DD format</li>
-            <li>Percentages must be integers between 0 and 100</li>
-            <li><code>note</code> must be a single line (no newlines)</li>
-            <li><code>ref</code> may appear multiple times for multiple sources</li>
-        </ul>
+    <hr class="section-rule">
 
-        <h2>Registry (Coming)</h2>
-        <p>Submitted labels will receive a permanent short ID — for example, <code>PL-000312</code> — that can be embedded in content. Anyone can look up a label ID at <code>provenance-label.org/r/PL-000312</code> to verify the original, timestamped disclosure.</p>
+    <!-- REGISTRY -->
+    <section>
+      <h2>The Registry <span style="font-family:var(--mono);font-size:0.7rem;color:var(--gray-500);font-weight:400;letter-spacing:0.06em;text-transform:uppercase;margin-left:0.5rem;">Coming</span></h2>
+      <p>Submitted labels receive a permanent short ID — for example, <code style="font-family:var(--mono);font-size:0.85em;">PL-000312</code> — that can be embedded in your content. Anyone can look it up to verify the original, timestamped disclosure.</p>
+      <p>Self-generated labels are free and unregistered. Registered labels get a permanent ID and public record. The difference is verifiability, not validity.</p>
+    </section>
 
-        <div class="registry-concept">
-            <div class="registry-header">How the registry works</div>
-            <div class="registry-body">
-                1. Generate a .plgen file using any valid tool<br>
-                2. Submit to provenance-label.org/submit<br>
-                3. Receive a unique PL-ID for your label<br>
-                4. Embed PL-ID in your content<br>
-                5. Anyone can verify at provenance-label.org/r/[PL-ID]<br><br>
-                Creator profiles: provenance-label.org/[author-name]<br>
-                → All labels by that author, in chronological order
-            </div>
-        </div>
-
-        <h2>Versioning</h2>
-        <p>The <code>@provenance</code> directive specifies the spec version. Major version changes indicate breaking format changes. Minor version changes are backwards-compatible additions. Implementations should specify the version they support.</p>
-
-        <h2>Building on PLGen</h2>
-        <p>This specification is licensed CC BY 4.0. Anyone can build implementations — CLI tools, website generators, browser extensions, GitHub Actions, editor plugins — as long as they reference this spec. Implementation code is licensed MIT.</p>
-        <p>To propose changes to the spec, open an issue on the <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub repository</a>.</p>
-
+    <!-- DEV BRIDGE -->
+    <div class="dev-bridge">
+      <div class="dev-bridge-text">
+        <strong>Building with Provenance Label?</strong>
+        <p>Full syntax reference, file format, validation rules, CLI commands, and integration guides.</p>
+      </div>
+      <a href="/dev" class="btn-dev">Developer Docs →</a>
     </div>
 
-    <footer>
-        <span>Provenance Label v1.0 — CC BY 4.0 / MIT</span>
-        <span>
-            <a href="/spec">Spec</a> &nbsp;·&nbsp;
-            <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
-        </span>
-    </footer>
+  </main>
+
+  <footer>
+    <span>provenance-label.org/spec</span>
+    <span><a href="/dev">Developers</a> · <a href="https://github.com/provenance-label">GitHub</a> · <a href="mailto:shelton@empathylab.io">Contact</a></span>
+  </footer>
 
 </body>
 </html>
