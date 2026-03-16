@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register a Label — Provenance Label</title>
+  <link rel="stylesheet" href="../shared.css">
+  <style>
+    /* ---- Paste zone ---- */
+    .paste-zone {
+      border: 1px solid var(--gray-mid);
+      background: var(--black);
+      padding: 28px 32px;
+      margin-bottom: 48px;
+    }
+
+    .paste-zone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
+
+    .paste-zone-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .paste-zone-hint {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #7a7068;
+    }
+
+    .paste-zone textarea {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 14px 16px;
+      border: 1px solid #3a3530;
+      background: #111;
+      color: #e8e4de;
+      resize: none;
+      line-height: 1.6;
+      border-radius: 2px;
+      height: 72px;
+    }
+
+    .paste-zone textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .paste-zone textarea::placeholder {
+      color: #4a4540;
+    }
+
+    .paste-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .parse-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--accent);
+      color: var(--white);
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      border-radius: 2px;
+    }
+
+    .parse-btn:hover { opacity: 0.85; }
+    .parse-btn:disabled { opacity: 0.4; cursor: default; }
+
+    .parse-status {
+      font-family: var(--mono);
+      font-size: 12px;
+      flex: 1;
+    }
+
+    .status-ok    { color: #4caf7d; }
+    .status-warn  { color: #e8c46a; }
+    .status-error { color: var(--accent); }
+
+    /* ---- Divider between paste zone and manual form ---- */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 0 40px;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid var(--gray-mid);
+    }
+
+    .or-divider span {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-dark);
+    }
+
+    /* ---- Form fields ---- */
+    .field-group {
+      margin-bottom: 36px;
+    }
+
+    .field-section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid var(--gray-light);
+      padding-bottom: 10px;
+      margin-bottom: 24px;
+    }
+
+    .field-row {
+      margin-bottom: 20px;
+    }
+
+    .field-row label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-dark);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .field-row label .req {
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
+    .field-row input,
+    .field-row textarea {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--gray-mid);
+      background: var(--white);
+      color: var(--black);
+      border-radius: 2px;
+      transition: border-color 0.15s;
+    }
+
+    .field-row input:focus,
+    .field-row textarea:focus {
+      outline: none;
+      border-color: var(--black);
+    }
+
+    .field-row input::placeholder,
+    .field-row textarea::placeholder {
+      color: var(--gray-mid);
+    }
+
+    .field-row textarea {
+      height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .split-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .split-bar-wrap {
+      margin-top: 10px;
+      background: var(--gray-light);
+      height: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+      grid-column: 1 / -1;
+    }
+
+    .split-bar-human {
+      height: 100%;
+      background: var(--black);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .split-labels {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--gray-dark);
+      margin-top: 6px;
+      grid-column: 1 / -1;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: auto;
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+
+    .checkbox-row span {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--gray-dark);
+      line-height: 1.5;
+    }
+
+    /* ---- Token-sourced field highlight ---- */
+    .from-token {
+      border-color: #4caf7d !important;
+      background: #f0faf4 !important;
+    }
+
+    /* ---- Submit ---- */
+    .submit-wrap {
+      margin-top: 48px;
+    }
+
+    .register-btn {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      padding: 18px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .register-btn:hover { background: var(--accent); }
+
+    /* ---- Success state ---- */
+    .success-panel {
+      display: none;
+      border: 1px solid var(--gray-mid);
+      margin-top: 40px;
+    }
+
+    .success-panel.visible { display: block; }
+
+    .success-header {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 20px;
+    }
+
+    .success-body {
+      padding: 28px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 2;
+    }
+
+    .pl-id-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .success-body a {
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    .badge-wrap {
+      background: var(--gray-light);
+      padding: 16px;
+      margin-top: 16px;
+      border-radius: 2px;
+    }
+
+    .badge-wrap pre {
+      margin: 0;
+      font-size: 12px;
+      background: none;
+      padding: 0;
+      color: var(--black);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .flagged-notice {
+      background: #fff8e6;
+      border-left: 3px solid #e8c46a;
+      padding: 14px 18px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #7a6010;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .split-row { grid-template-columns: 1fr; }
+      .paste-zone { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">PROVENANCE LABEL</a>
+  <a href="/register" class="active">New Label</a>
+  <a href="/dashboard">My Labels</a>
+  <a href="https://provenancelabel.org" target="_blank">provenancelabel.org ↗</a>
+</nav>
+
+<div class="page-wrap">
+
+  <h1>Register a Label</h1>
+  <p style="color: var(--gray-dark); margin-bottom: 48px;">
+    Fill in the details from your AI session. Members get a permanent URL and embeddable badge.
+  </p>
+
+  <!-- ── PASTE ZONE ── -->
+  <div class="paste-zone">
+    <div class="paste-zone-header">
+      <span class="paste-zone-label">Paste Registration Token</span>
+      <span class="paste-zone-hint">from Claude or other PLGen-aware AI</span>
+    </div>
+    <textarea
+      id="plgtInput"
+      placeholder="PLGT1|author|work_title|work_url|human_pct|ai_pct|ai_tools|session_init|estimated|process_notes|checksum"
+      spellcheck="false"
+      autocomplete="off"
+    ></textarea>
+    <div class="paste-actions">
+      <button class="parse-btn" id="parseBtn">Parse Token</button>
+      <div class="parse-status" id="parseStatus"></div>
+    </div>
+  </div>
+
+  <div class="or-divider"><span>or fill in manually</span></div>
+
+  <!-- ── FORM ── -->
+  <form id="registerForm">
+
+    <div class="field-group">
+      <div class="field-section-label">Member Auth</div>
+      <div class="field-row">
+        <label>API Key <span class="req">*</span></label>
+        <input type="password" id="api_key" name="api_key"
+               placeholder="plg_live_... — leave blank for free text-only label"
+               autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-section-label">About You</div>
+      <div class="field-row">
+        <label>Author Name <span class="req">*</span></label>
+        <input type="text" id="author" name="author" placeholder="Your name or handle">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-section-label">About the Work</div>
+      <div class="field-row">
+        <label>Work Title</label>
+        <input type="text" id="work_title" name="work_title"
+               placeholder="Title of the piece, project, or session">
+      </div>
+      <div class="field-row">
+        <label>Work URL</label>
+        <input type="url" id="work_url" name="work_url" placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-section-label">Contribution Split</div>
+      <div class="split-row">
+        <div class="field-row">
+          <label>Human % <span class="req">*</span></label>
+          <input type="number" id="human_pct" name="human_pct"
+                 min="0" max="100" placeholder="e.g. 60">
+        </div>
+        <div class="field-row">
+          <label>AI % <span class="req">*</span></label>
+          <input type="number" id="ai_pct" name="ai_pct"
+                 min="0" max="100" placeholder="e.g. 40">
+        </div>
+        <div class="split-bar-wrap">
+          <div class="split-bar-human" id="splitBar"></div>
+        </div>
+        <div class="split-labels">
+          <span id="splitLabelHuman">Human 0%</span>
+          <span id="splitLabelAI">AI 0%</span>
+        </div>
+      </div>
+      <div class="field-row" style="margin-top: 20px;">
+        <label>AI Tools Used</label>
+        <input type="text" id="ai_tools" name="ai_tools"
+               placeholder="e.g. Claude Sonnet 4.6, Midjourney">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-section-label">Process Notes</div>
+      <div class="field-row">
+        <label>How did you collaborate?</label>
+        <textarea id="process_notes" name="process_notes"
+                  placeholder="Brief description of how you and the AI worked together..."></textarea>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="estimated" name="estimated">
+        <span>Percentages are estimated (label initialized after session start)</span>
+      </div>
+    </div>
+
+    <!-- Hidden fields for token metadata -->
+    <input type="hidden" id="_token_used" name="_token_used" value="false">
+    <input type="hidden" id="_checksum_valid" name="_checksum_valid" value="">
+    <input type="hidden" id="_token_raw" name="_token_raw" value="">
+    <input type="hidden" id="session_init" name="session_init" value="pre">
+
+    <div class="submit-wrap">
+      <button type="button" class="register-btn" id="submitBtn">Register Label</button>
+    </div>
+
+  </form>
+
+  <!-- ── SUCCESS PANEL ── -->
+  <div class="success-panel" id="successPanel">
+    <div class="success-header">Label Registered</div>
+    <div class="success-body">
+      <span class="pl-id-display" id="successId"></span>
+      <div>Permanent URL: <a id="successUrl" href="#" target="_blank"></a></div>
+      <div class="badge-wrap">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+                    color:var(--gray-dark);margin-bottom:8px;">Badge HTML</div>
+        <pre id="successBadge"></pre>
+      </div>
+      <div class="flagged-notice" id="flaggedNotice" style="display:none;">
+        ⚠ Checksum mismatch detected. This label was flagged — the registration token
+        may have been edited before pasting. The label is registered and valid.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <span>provenancelabel.org — open standard for AI collaboration disclosure</span>
+  <a href="/dashboard">Dashboard</a>
+</footer>
+
+<script>
+// ── Split bar ──
+function updateSplitBar() {
+  const h = parseInt(document.getElementById('human_pct').value) || 0;
+  const a = parseInt(document.getElementById('ai_pct').value) || 0;
+  document.getElementById('splitBar').style.width = h + '%';
+  document.getElementById('splitLabelHuman').textContent = `Human ${h}%`;
+  document.getElementById('splitLabelAI').textContent = `AI ${a}%`;
+}
+
+document.getElementById('human_pct').addEventListener('input', updateSplitBar);
+document.getElementById('ai_pct').addEventListener('input', updateSplitBar);
+
+// ── SHA-256 ──
+async function sha256(str) {
+  const buf = await crypto.subtle.digest(
+    'SHA-256', new TextEncoder().encode(str)
+  );
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// ── PLGT1 Parser ──
+async function parsePLGT(token) {
+  const parts = token.trim().split('|');
+  if (parts.length !== 11) {
+    return { ok: false, error: `Expected 11 fields, got ${parts.length}` };
+  }
+  if (parts[0] !== 'PLGT1') {
+    return { ok: false, error: `Unknown format: ${parts[0]}` };
+  }
+
+  const [tag, author, work_title, work_url, human_pct, ai_pct,
+         ai_tools, session_init, estimated, process_notes, checksum] = parts;
+
+  const payload = parts.slice(0, 10).join('|');
+  const computed = (await sha256(payload)).slice(0, 8);
+  const checksumValid = computed === checksum;
+
+  const hPct = parseInt(human_pct, 10);
+  const aPct = parseInt(ai_pct, 10);
+
+  if (hPct + aPct !== 100) {
+    return { ok: false, error: `Split must sum to 100 (got ${hPct + aPct})` };
+  }
+
+  return {
+    ok: true,
+    data: {
+      author:         decodeURIComponent(author),
+      work_title:     decodeURIComponent(work_title),
+      work_url:       decodeURIComponent(work_url),
+      human_pct:      hPct,
+      ai_pct:         aPct,
+      ai_tools:       decodeURIComponent(ai_tools),
+      session_init,
+      estimated:      estimated === 'true',
+      process_notes:  decodeURIComponent(process_notes),
+      checksum_valid: checksumValid,
+      checksum_submitted: checksum,
+      checksum_computed:  computed,
+    }
+  };
+}
+
+// ── Populate form from token ──
+function populateFromToken(data) {
+  const map = {
+    author:        data.author,
+    work_title:    data.work_title,
+    work_url:      data.work_url,
+    human_pct:     data.human_pct,
+    ai_pct:        data.ai_pct,
+    ai_tools:      data.ai_tools,
+    process_notes: data.process_notes,
+    session_init:  data.session_init,
+  };
+
+  for (const [id, val] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = val;
+      el.classList.add('from-token');
+    }
+  }
+
+  document.getElementById('estimated').checked = data.estimated;
+  updateSplitBar();
+
+  // Store token metadata
+  document.getElementById('_token_used').value = 'true';
+  document.getElementById('_checksum_valid').value = data.checksum_valid;
+  document.getElementById('_token_raw').value =
+    document.getElementById('plgtInput').value.trim();
+}
+
+// ── Parse button ──
+document.getElementById('parseBtn').addEventListener('click', async () => {
+  const token = document.getElementById('plgtInput').value.trim();
+  if (!token) return;
+
+  const statusEl = document.getElementById('parseStatus');
+  statusEl.innerHTML = '<span style="color:#7a7068;">Parsing...</span>';
+
+  const result = await parsePLGT(token);
+
+  if (!result.ok) {
+    statusEl.innerHTML = `<span class="status-error">✗ ${result.error}</span>`;
+    return;
+  }
+
+  populateFromToken(result.data);
+
+  if (result.data.checksum_valid) {
+    statusEl.innerHTML =
+      '<span class="status-ok">✓ Token verified — fields populated</span>';
+  } else {
+    statusEl.innerHTML =
+      `<span class="status-warn">⚠ Checksum mismatch — token may have been edited. ` +
+      `Fields populated; submission will be flagged.</span>`;
+  }
+});
+
+// ── Submit ──
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const apiKey      = document.getElementById('api_key').value.trim();
+  const author      = document.getElementById('author').value.trim();
+  const human_pct   = parseInt(document.getElementById('human_pct').value, 10);
+  const ai_pct      = parseInt(document.getElementById('ai_pct').value, 10);
+
+  if (!author) { alert('Author name is required.'); return; }
+  if (isNaN(human_pct) || isNaN(ai_pct)) { alert('Contribution split is required.'); return; }
+  if (human_pct + ai_pct !== 100) { alert('Human % + AI % must equal 100.'); return; }
+
+  const body = {
+    author,
+    work_title:    document.getElementById('work_title').value.trim(),
+    work_url:      document.getElementById('work_url').value.trim() || undefined,
+    human_pct,
+    ai_pct,
+    ai_tools:      document.getElementById('ai_tools').value.trim(),
+    process_notes: document.getElementById('process_notes').value.trim(),
+    session_init:  document.getElementById('session_init').value || 'pre',
+    estimated:     document.getElementById('estimated').checked,
+    _token_used:   document.getElementById('_token_used').value === 'true',
+    _checksum_valid: document.getElementById('_checksum_valid').value === 'true',
+    _token_raw:    document.getElementById('_token_raw').value || undefined,
+  };
+
+  const headers = { 'Content-Type': 'application/json' };
+  if (apiKey) headers['x-plgen-key'] = apiKey;
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Registering...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(
+      'https://registry.provenancelabel.org/api/labels/register',
+      { method: 'POST', headers, body: JSON.stringify(body) }
+    );
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+    // Show success
+    document.getElementById('successId').textContent = data.pl_id;
+    const urlEl = document.getElementById('successUrl');
+    urlEl.href = data.url;
+    urlEl.textContent = data.url;
+    document.getElementById('successBadge').textContent = data.badge_html || '';
+
+    if (body._token_used && !body._checksum_valid) {
+      document.getElementById('flaggedNotice').style.display = 'block';
+    }
+
+    document.getElementById('successPanel').classList.add('visible');
+    document.getElementById('successPanel').scrollIntoView({ behavior: 'smooth' });
+
+  } catch (err) {
+    alert('Registration error: ' + err.message);
+    btn.textContent = 'Register Label';
+    btn.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>
