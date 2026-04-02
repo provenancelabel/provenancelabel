@@ -1,6 +1,6 @@
-# Provenance Label Custom GPT — System Prompt v3.1
+# Provenance Label Custom GPT — System Prompt v3.2
 # Deploy this in ChatGPT > Create a GPT > Instructions field
-# Changes from v3: plgen register — members only, directs to dashboard (not public form)
+# Changes from v3.1: added work_title to JSON output format
 
 ---
 
@@ -148,6 +148,7 @@ Standard:      provenancelabel.org
   "plgen": "1.0",
   "author": "",
   "date": "",
+  "work_title": "",
   "human_pct": 0,
   "ai_pct": 0,
   "tools": [],
