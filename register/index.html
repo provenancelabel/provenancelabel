@@ -232,7 +232,7 @@
       line-height: 1.5;
     }
 
-    /* ---- Token-sourced field highlight ---- */
+    /* ---- JSON-sourced field highlight ---- */
     .from-token {
       border-color: #4caf7d !important;
       background: #f0faf4 !important;
@@ -351,17 +351,18 @@
   <!-- ── PASTE ZONE ── -->
   <div class="paste-zone">
     <div class="paste-zone-header">
-      <span class="paste-zone-label">Paste Registration Token</span>
-      <span class="paste-zone-hint">from Claude or other PLGen-aware AI</span>
+      <span class="paste-zone-label">Paste JSON from PLGen</span>
+      <span class="paste-zone-hint">copy from ChatGPT after plgen generate</span>
     </div>
     <textarea
       id="plgtInput"
-      placeholder="PLGT1|author|work_title|work_url|human_pct|ai_pct|ai_tools|session_init|estimated|process_notes|checksum"
+      placeholder='{ "plgen": "1.0", "author": "...", "human_pct": 60, "ai_pct": 40, ... }'
       spellcheck="false"
       autocomplete="off"
+      style="height:100px;"
     ></textarea>
     <div class="paste-actions">
-      <button class="parse-btn" id="parseBtn">Parse Token</button>
+      <button class="parse-btn" id="parseBtn">Parse JSON</button>
       <div class="parse-status" id="parseStatus"></div>
     </div>
   </div>
@@ -370,16 +371,6 @@
 
   <!-- ── FORM ── -->
   <form id="registerForm">
-
-    <div class="field-group">
-      <div class="field-section-label">Member Auth</div>
-      <div class="field-row">
-        <label>API Key <span class="req">*</span></label>
-        <input type="password" id="api_key" name="api_key"
-               placeholder="plg_live_... — leave blank for free text-only label"
-               autocomplete="off">
-      </div>
-    </div>
 
     <div class="field-group">
       <div class="field-section-label">About You</div>
@@ -443,10 +434,6 @@
       </div>
     </div>
 
-    <!-- Hidden fields for token metadata -->
-    <input type="hidden" id="_token_used" name="_token_used" value="false">
-    <input type="hidden" id="_checksum_valid" name="_checksum_valid" value="">
-    <input type="hidden" id="_token_raw" name="_token_raw" value="">
     <input type="hidden" id="session_init" name="session_init" value="pre">
 
     <div class="submit-wrap">
@@ -465,10 +452,6 @@
         <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
                     color:var(--gray-dark);margin-bottom:8px;">Badge HTML</div>
         <pre id="successBadge"></pre>
-      </div>
-      <div class="flagged-notice" id="flaggedNotice" style="display:none;">
-        ⚠ Checksum mismatch detected. This label was flagged — the registration token
-        may have been edited before pasting. The label is registered and valid.
       </div>
     </div>
   </div>
@@ -493,70 +476,53 @@ function updateSplitBar() {
 document.getElementById('human_pct').addEventListener('input', updateSplitBar);
 document.getElementById('ai_pct').addEventListener('input', updateSplitBar);
 
-// ── SHA-256 ──
-async function sha256(str) {
-  const buf = await crypto.subtle.digest(
-    'SHA-256', new TextEncoder().encode(str)
-  );
-  return Array.from(new Uint8Array(buf))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
-
-// ── PLGT1 Parser ──
-async function parsePLGT(token) {
-  const parts = token.trim().split('|');
-  if (parts.length !== 11) {
-    return { ok: false, error: `Expected 11 fields, got ${parts.length}` };
-  }
-  if (parts[0] !== 'PLGT1') {
-    return { ok: false, error: `Unknown format: ${parts[0]}` };
+// ── JSON Parser ──
+function parseJSON(raw) {
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    return { ok: false, error: 'Invalid JSON — check formatting and try again.' };
   }
 
-  const [tag, author, work_title, work_url, human_pct, ai_pct,
-         ai_tools, session_init, estimated, process_notes, checksum] = parts;
+  const hPct = parseInt(data.human_pct, 10);
+  const aPct = parseInt(data.ai_pct, 10);
 
-  const payload = parts.slice(0, 10).join('|');
-  const computed = (await sha256(payload)).slice(0, 8);
-  const checksumValid = computed === checksum;
+  if (!data.author) return { ok: false, error: 'Missing required field: author' };
+  if (isNaN(hPct) || isNaN(aPct)) return { ok: false, error: 'Missing required field: human_pct / ai_pct' };
+  if (hPct + aPct !== 100) return { ok: false, error: `Split must sum to 100 (got ${hPct + aPct})` };
 
-  const hPct = parseInt(human_pct, 10);
-  const aPct = parseInt(ai_pct, 10);
+  // Normalize tools: array → comma string
+  const tools = Array.isArray(data.tools)
+    ? data.tools.join(', ')
+    : (data.tools || data.ai_tools || '');
 
-  if (hPct + aPct !== 100) {
-    return { ok: false, error: `Split must sum to 100 (got ${hPct + aPct})` };
-  }
+  // Combine human_role + ai_role into process_notes
+  const notes = [data.human_role, data.ai_role].filter(Boolean).join(' / ') || data.process_notes || '';
 
   return {
     ok: true,
     data: {
-      author:         decodeURIComponent(author),
-      work_title:     decodeURIComponent(work_title),
-      work_url:       decodeURIComponent(work_url),
-      human_pct:      hPct,
-      ai_pct:         aPct,
-      ai_tools:       decodeURIComponent(ai_tools),
-      session_init,
-      estimated:      estimated === 'true',
-      process_notes:  decodeURIComponent(process_notes),
-      checksum_valid: checksumValid,
-      checksum_submitted: checksum,
-      checksum_computed:  computed,
+      author:        data.author,
+      work_url:      data.ref || '',
+      human_pct:     hPct,
+      ai_pct:        aPct,
+      ai_tools:      tools,
+      process_notes: notes,
+      estimated:     false,
     }
   };
 }
 
-// ── Populate form from token ──
-function populateFromToken(data) {
+// ── Populate form from JSON ──
+function populateFromJSON(data) {
   const map = {
     author:        data.author,
-    work_title:    data.work_title,
     work_url:      data.work_url,
     human_pct:     data.human_pct,
     ai_pct:        data.ai_pct,
     ai_tools:      data.ai_tools,
     process_notes: data.process_notes,
-    session_init:  data.session_init,
   };
 
   for (const [id, val] of Object.entries(map)) {
@@ -569,47 +535,30 @@ function populateFromToken(data) {
 
   document.getElementById('estimated').checked = data.estimated;
   updateSplitBar();
-
-  // Store token metadata
-  document.getElementById('_token_used').value = 'true';
-  document.getElementById('_checksum_valid').value = data.checksum_valid;
-  document.getElementById('_token_raw').value =
-    document.getElementById('plgtInput').value.trim();
 }
 
 // ── Parse button ──
-document.getElementById('parseBtn').addEventListener('click', async () => {
-  const token = document.getElementById('plgtInput').value.trim();
-  if (!token) return;
+document.getElementById('parseBtn').addEventListener('click', () => {
+  const raw = document.getElementById('plgtInput').value.trim();
+  if (!raw) return;
 
   const statusEl = document.getElementById('parseStatus');
-  statusEl.innerHTML = '<span style="color:#7a7068;">Parsing...</span>';
-
-  const result = await parsePLGT(token);
+  const result = parseJSON(raw);
 
   if (!result.ok) {
     statusEl.innerHTML = `<span class="status-error">✗ ${result.error}</span>`;
     return;
   }
 
-  populateFromToken(result.data);
-
-  if (result.data.checksum_valid) {
-    statusEl.innerHTML =
-      '<span class="status-ok">✓ Token verified — fields populated</span>';
-  } else {
-    statusEl.innerHTML =
-      `<span class="status-warn">⚠ Checksum mismatch — token may have been edited. ` +
-      `Fields populated; submission will be flagged.</span>`;
-  }
+  populateFromJSON(result.data);
+  statusEl.innerHTML = '<span class="status-ok">✓ JSON parsed — fields populated</span>';
 });
 
 // ── Submit ──
 document.getElementById('submitBtn').addEventListener('click', async () => {
-  const apiKey      = document.getElementById('api_key').value.trim();
-  const author      = document.getElementById('author').value.trim();
-  const human_pct   = parseInt(document.getElementById('human_pct').value, 10);
-  const ai_pct      = parseInt(document.getElementById('ai_pct').value, 10);
+  const author    = document.getElementById('author').value.trim();
+  const human_pct = parseInt(document.getElementById('human_pct').value, 10);
+  const ai_pct    = parseInt(document.getElementById('ai_pct').value, 10);
 
   if (!author) { alert('Author name is required.'); return; }
   if (isNaN(human_pct) || isNaN(ai_pct)) { alert('Contribution split is required.'); return; }
@@ -625,13 +574,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     process_notes: document.getElementById('process_notes').value.trim(),
     session_init:  document.getElementById('session_init').value || 'pre',
     estimated:     document.getElementById('estimated').checked,
-    _token_used:   document.getElementById('_token_used').value === 'true',
-    _checksum_valid: document.getElementById('_checksum_valid').value === 'true',
-    _token_raw:    document.getElementById('_token_raw').value || undefined,
   };
-
-  const headers = { 'Content-Type': 'application/json' };
-  if (apiKey) headers['x-plgen-key'] = apiKey;
 
   const btn = document.getElementById('submitBtn');
   btn.textContent = 'Registering...';
@@ -640,22 +583,17 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   try {
     const res = await fetch(
       'https://registry.provenancelabel.org/api/labels/register',
-      { method: 'POST', headers, body: JSON.stringify(body) }
+      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
     );
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || 'Registration failed');
 
-    // Show success
     document.getElementById('successId').textContent = data.pl_id;
     const urlEl = document.getElementById('successUrl');
     urlEl.href = data.url;
     urlEl.textContent = data.url;
     document.getElementById('successBadge').textContent = data.badge_html || '';
-
-    if (body._token_used && !body._checksum_valid) {
-      document.getElementById('flaggedNotice').style.display = 'block';
-    }
 
     document.getElementById('successPanel').classList.add('visible');
     document.getElementById('successPanel').scrollIntoView({ behavior: 'smooth' });
