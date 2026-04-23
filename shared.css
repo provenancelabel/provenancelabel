@@ -396,6 +396,39 @@ footer a:hover { color: var(--black); }
     white-space: pre-wrap;
 }
 
+/* ── PL Badge — copyable registered label link ── */
+.pl-mark {
+    font-family: var(--mono);
+    font-size: 0.7em;
+    font-weight: bold;
+    vertical-align: super;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.pl-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--gray-light);
+    border: 0.5px solid var(--gray-mid);
+    border-radius: 3px;
+    padding: 6px 12px 6px 10px;
+    text-decoration: none;
+    color: var(--black);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+}
+
+.pl-badge:hover { border-color: var(--accent); background: var(--white); }
+.pl-badge.copied { border-color: #2a7a4b; color: #2a7a4b; }
+
+.pl-badge--small { font-size: 11px; padding: 3px 9px 3px 8px; }
+.pl-badge--large { font-size: 16px; padding: 8px 16px 8px 14px; }
+
 /* ============================================
    SPEC PAGE — body.spec-scoped styles
    ============================================ */

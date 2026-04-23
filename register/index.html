@@ -448,7 +448,16 @@
     <div class="success-body">
       <span class="pl-id-display" id="successId"></span>
       <div>Permanent URL: <a id="successUrl" href="#" target="_blank"></a></div>
-      <div class="badge-wrap">
+      <div style="margin-top:20px;">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+                    color:var(--gray-dark);margin-bottom:10px;">Share Badge</div>
+        <div class="pl-badge" id="plShareBadge" onclick="copyPlLink(this, this.dataset.url)">
+          <span class="pl-mark">PL</span>&nbsp;<span class="pl-num" id="plBadgeNum"></span>
+        </div>
+        <div style="font-size:11px;color:var(--gray-dark);margin-top:6px;
+                    font-family:var(--mono);">click to copy link</div>
+      </div>
+      <div class="badge-wrap" style="margin-top:20px;">
         <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
                     color:var(--gray-dark);margin-bottom:8px;">Badge HTML</div>
         <pre id="successBadge"></pre>
@@ -464,6 +473,18 @@
 </footer>
 
 <script>
+// ── PL Badge copy ──
+function copyPlLink(el, url) {
+  navigator.clipboard.writeText(url).then(() => {
+    el.classList.add('copied');
+    el.querySelector('.pl-num').textContent = 'Copied!';
+    setTimeout(() => {
+      el.classList.remove('copied');
+      el.querySelector('.pl-num').textContent = '#' + url.split('/').pop().padStart(6, '0');
+    }, 1600);
+  });
+}
+
 // ── Split bar ──
 function updateSplitBar() {
   const h = parseInt(document.getElementById('human_pct').value) || 0;
@@ -594,6 +615,10 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     urlEl.href = data.url;
     urlEl.textContent = data.url;
     document.getElementById('successBadge').textContent = data.badge_html || '';
+
+    const badge = document.getElementById('plShareBadge');
+    badge.dataset.url = data.url;
+    document.getElementById('plBadgeNum').textContent = '#' + data.url.split('/').pop().padStart(6, '0');
 
     document.getElementById('successPanel').classList.add('visible');
     document.getElementById('successPanel').scrollIntoView({ behavior: 'smooth' });
