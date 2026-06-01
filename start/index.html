@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started — Provenance Label</title>
+    <meta name="description" content="Start using Provenance Labels at any stage of your work. Answer two questions and find your path.">
+    <link rel="stylesheet" href="../shared.css">
+    <style>
+        .start-q {
+            margin: 40px 0 0;
+        }
+        .start-q h2 {
+            margin-bottom: 20px;
+        }
+        .start-opts {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .start-opt {
+            border: 1px solid var(--gray-mid);
+            background: none;
+            cursor: pointer;
+            padding: 20px 24px;
+            text-align: left;
+            flex: 1;
+            min-width: 180px;
+            font-family: inherit;
+            transition: border-color 0.12s;
+        }
+        .start-opt:hover {
+            border-color: var(--black);
+        }
+        .start-opt.selected {
+            border-color: var(--black);
+            background: var(--accent-light);
+        }
+        .start-opt-title {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--black);
+            margin-bottom: 5px;
+            letter-spacing: 0.02em;
+        }
+        .start-opt-sub {
+            font-size: 14px;
+            color: var(--gray-dark);
+            line-height: 1.4;
+        }
+        .path-callout {
+            border-left: 3px solid var(--accent);
+            background: var(--accent-light);
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            font-size: 15px;
+            color: var(--black);
+            line-height: 1.5;
+        }
+        .path-callout p { margin: 0; }
+        .path-callout p + p { margin-top: 8px; color: var(--gray-dark); font-size: 14px; }
+        .start-hidden { display: none; }
+        .q2-wrap { margin-top: 40px; }
+        .path-wrap { margin-top: 48px; }
+        .path-cta {
+            margin-top: 40px;
+            padding: 24px;
+            border: 1px solid var(--gray-mid);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .path-cta p { margin: 0; font-size: 15px; color: var(--gray-dark); }
+        .path-cta strong { display: block; font-family: var(--mono); font-size: 13px; margin-bottom: 4px; color: var(--black); }
+        @media (max-width: 600px) { .path-cta { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">PROVENANCE LABEL</a>
+        <a href="/spec">Spec</a>
+        <a href="/join">Join</a>
+        <a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a>
+    </nav>
+
+    <div class="page-wrap">
+
+        <header>
+            <h1>Get started</h1>
+            <p style="font-size:17px; color:var(--gray-dark); margin-top:12px; max-width:560px;">Provenance Labels work at any stage of a project. Answer two questions and we'll show you where to begin.</p>
+        </header>
+
+        <hr class="section-divider">
+
+        <!-- Q1: Stage -->
+        <div class="start-q" id="q1">
+            <h2>Where are you in your work?</h2>
+            <div class="start-opts">
+                <button class="start-opt" onclick="selectStage('new', this)">
+                    <div class="start-opt-title">Just starting</div>
+                    <div class="start-opt-sub">Haven't used AI on this work yet</div>
+                </button>
+                <button class="start-opt" onclick="selectStage('mid', this)">
+                    <div class="start-opt-title">Mid-work</div>
+                    <div class="start-opt-sub">Already using AI, want to start tracking now</div>
+                </button>
+                <button class="start-opt" onclick="selectStage('done', this)">
+                    <div class="start-opt-title">Finished</div>
+                    <div class="start-opt-sub">Work is done, want to add a label</div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Q2: Tool -->
+        <div class="q2-wrap start-hidden" id="q2">
+            <hr class="section-divider">
+            <div class="start-q">
+                <h2>Which AI tool are you using?</h2>
+                <div class="start-opts">
+                    <button class="start-opt" onclick="selectTool('claude', this)">
+                        <div class="start-opt-title">Claude</div>
+                        <div class="start-opt-sub">Anthropic — claude.ai</div>
+                    </button>
+                    <button class="start-opt" onclick="selectTool('chatgpt', this)">
+                        <div class="start-opt-title">ChatGPT</div>
+                        <div class="start-opt-sub">OpenAI — chatgpt.com</div>
+                    </button>
+                    <button class="start-opt" onclick="selectTool('other', this)">
+                        <div class="start-opt-title">Other</div>
+                        <div class="start-opt-sub">Gemini, Copilot, or multiple tools</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PATHS ─────────────────────────────────────── -->
+
+        <!-- NEW + CLAUDE -->
+        <div id="path-new-claude" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>You're starting fresh with Claude. PLGen will track your session from the beginning — no estimation needed.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open PLGen in Claude</h3>
+                        <p>PLGen lives in a dedicated Claude Project. <a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener">Open PLGen in Claude →</a></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen init</code></h3>
+                        <p>Opens the session. PLGen records the date and tool automatically. No setup questions.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Do your work</h3>
+                        <p>Write, research, draft — whatever you're making. PLGen observes contributions silently throughout the session.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen generate</code></h3>
+                        <p>PLGen closes the session and produces your label. It'll ask you to confirm the contribution split. You review and approve — the final number is yours.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional</span></h3>
+                        <p>Registration gives your label a permanent ID and timestamped public record. Useful for academic work, publications, or anywhere verifiable disclosure matters. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW + CHATGPT -->
+        <div id="path-new-chatgpt" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>You're starting fresh with ChatGPT. PLGen will track your session from the beginning — no estimation needed.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open PLGen in ChatGPT</h3>
+                        <p>PLGen has a dedicated Custom GPT for ChatGPT users. <a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener">Open PLGen in ChatGPT →</a></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen init</code></h3>
+                        <p>Opens the session. PLGen records the date and tool automatically. No setup questions.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Do your work</h3>
+                        <p>Write, research, draft — whatever you're making. PLGen observes contributions silently throughout the session.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen generate</code></h3>
+                        <p>PLGen closes the session and produces your label. It'll ask you to confirm the contribution split. You review and approve — the final number is yours.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional</span></h3>
+                        <p>Registration gives your label a permanent ID and timestamped public record. Useful for academic work, publications, or anywhere verifiable disclosure matters. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW + OTHER -->
+        <div id="path-new-other" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>You're starting fresh. PLGen's command set works natively in Claude and ChatGPT — for other tools, use the manual prompt approach.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open your AI session and set intent</h3>
+                        <p>At the start, tell your AI: <em>"We're using Provenance Label standards for this session. Track our contributions as we work."</em></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Do your work</h3>
+                        <p>Work normally. The AI will have context to estimate contributions at the end.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Generate your label at the end</h3>
+                        <p>Use the prompt on the <a href="/#generate">main page</a> to generate your label. Review the split and adjust if needed.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional</span></h3>
+                        <p>Registration gives your label a permanent ID and timestamped public record. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="path-cta">
+                <div>
+                    <strong>Want the full experience?</strong>
+                    <p>PLGen's session tracking and commands work natively in Claude and ChatGPT. Switching means less manual work at the end.</p>
+                </div>
+                <a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener" class="btn">Try PLGen in Claude →</a>
+            </div>
+        </div>
+
+        <!-- MID + CLAUDE -->
+        <div id="path-mid-claude" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>You've been using AI and want to start tracking. You don't need logs or history — you estimate the work done so far, then PLGen tracks going forward.</p>
+                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, that's useful information.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Estimate your split so far</h3>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus AI? You're not auditing — you're making a good-faith estimate. Write it down.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open PLGen in Claude</h3>
+                        <p>PLGen lives in a dedicated Claude Project. <a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener">Open PLGen in Claude →</a></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen init</code> and give context</h3>
+                        <p>After init, briefly tell PLGen: <em>"I'm continuing existing work. My estimated split so far is about [X]% human / [Y]% AI."</em> PLGen will carry this forward.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Continue your work</h3>
+                        <p>PLGen tracks contributions from here. Keep working — this session's tracking combines with your earlier estimate.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen generate</code></h3>
+                        <p>PLGen produces your label accounting for both your estimate of past work and what it observed in this session. You confirm the final split.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional but recommended for academic work</span></h3>
+                        <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed — not just that you labeled. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MID + CHATGPT -->
+        <div id="path-mid-chatgpt" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>You've been using AI and want to start tracking. You don't need logs or history — you estimate the work done so far, then PLGen tracks going forward.</p>
+                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, that's useful information.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Estimate your split so far</h3>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus AI? You're not auditing — you're making a good-faith estimate. Write it down.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open PLGen in ChatGPT</h3>
+                        <p>PLGen has a dedicated Custom GPT for ChatGPT users. <a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener">Open PLGen in ChatGPT →</a></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen init</code> and give context</h3>
+                        <p>After init, briefly tell PLGen: <em>"I'm continuing existing work. My estimated split so far is about [X]% human / [Y]% AI."</em> PLGen will carry this forward.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Continue your work</h3>
+                        <p>PLGen tracks contributions from here. Keep working — this session's tracking combines with your earlier estimate.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen generate</code></h3>
+                        <p>PLGen produces your label accounting for both your estimate of past work and what it observed in this session. You confirm the final split.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional but recommended for academic work</span></h3>
+                        <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed — not just that you labeled. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MID + OTHER -->
+        <div id="path-mid-other" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>You've been using AI and want to start tracking. You don't need logs or history — you estimate the work done so far, then note it in your next session.</p>
+                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, that's useful information.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Estimate your split so far</h3>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus AI? You're not auditing — you're making a good-faith estimate. Write it down.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open your next AI session with context</h3>
+                        <p>Tell your AI: <em>"We're using Provenance Label standards. I've been working on this for [context]. My estimated split so far is [X]% human / [Y]% AI. Track our contributions in this session."</em></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Continue your work</h3>
+                        <p>Work normally. The AI will track this session's contributions in context of your earlier estimate.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Generate your label at the end</h3>
+                        <p>Use the prompt on the <a href="/#generate">main page</a> to generate your label, or ask your AI to generate it based on your overall split. Review and approve.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional but recommended for academic work</span></h3>
+                        <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONE + CLAUDE -->
+        <div id="path-done-claude" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>Your work is finished. You can still generate an honest label — estimate your split from memory, then use PLGen to produce and register it.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Estimate your split</h3>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? Who edited, cut, and shaped the final output? You're not auditing — you're making a good-faith estimate.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open PLGen in Claude</h3>
+                        <p><a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener">Open PLGen in Claude →</a></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen generate</code></h3>
+                        <p>Tell PLGen you're labeling finished work and share your split estimate. PLGen will produce the label and ask you to confirm.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended</span></h3>
+                        <p>For finished work — especially academic or professional — registration is how the disclosure becomes verifiable. It timestamps your record and makes it permanently public. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONE + CHATGPT -->
+        <div id="path-done-chatgpt" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>Your work is finished. You can still generate an honest label — estimate your split from memory, then use PLGen to produce and register it.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Estimate your split</h3>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? Who edited, cut, and shaped the final output? You're not auditing — you're making a good-faith estimate.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open PLGen in ChatGPT</h3>
+                        <p><a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener">Open PLGen in ChatGPT →</a></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Type <code>plgen generate</code></h3>
+                        <p>Tell PLGen you're labeling finished work and share your split estimate. PLGen will produce the label and ask you to confirm.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended</span></h3>
+                        <p>For finished work — especially academic or professional — registration is how the disclosure becomes verifiable. It timestamps your record and makes it permanently public. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DONE + OTHER -->
+        <div id="path-done-other" class="path-wrap start-hidden">
+            <hr class="section-divider">
+            <div class="path-callout">
+                <p>Your work is finished. You can still generate an honest label — estimate your split from memory, then generate it with any AI tool.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Estimate your split</h3>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? Who edited, cut, and shaped the final output? You're not auditing — you're making a good-faith estimate.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Generate your label</h3>
+                        <p>Open any AI and use the prompt on the <a href="/#generate">main page</a>, or simply ask: <em>"Generate a Provenance Label v1.2 for this work. My split estimate is [X]% human / [Y]% AI. Tools used: [tool names]."</em></p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended</span></h3>
+                        <p>For finished work — especially academic or professional — registration is how the disclosure becomes verifiable. <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <span>Provenance Label v1.2 — CC BY 4.0 / MIT</span>
+        <span>
+            <a href="/spec">Spec</a> &nbsp;·&nbsp;
+            <a href="/join">Join</a> &nbsp;·&nbsp;
+            <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
+        </span>
+    </footer>
+
+    <script>
+        var stage = null;
+        var tool = null;
+
+        function selectStage(s, el) {
+            stage = s;
+            document.querySelectorAll('#q1 .start-opt').forEach(function(b) { b.classList.remove('selected'); });
+            el.classList.add('selected');
+            hideAllPaths();
+            if (tool) {
+                tool = null;
+                document.querySelectorAll('#q2 .start-opt').forEach(function(b) { b.classList.remove('selected'); });
+            }
+            document.getElementById('q2').classList.remove('start-hidden');
+            document.getElementById('q2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function selectTool(t, el) {
+            tool = t;
+            document.querySelectorAll('#q2 .start-opt').forEach(function(b) { b.classList.remove('selected'); });
+            el.classList.add('selected');
+            showPath(stage + '-' + tool);
+        }
+
+        function showPath(id) {
+            hideAllPaths();
+            var el = document.getElementById('path-' + id);
+            if (el) {
+                el.classList.remove('start-hidden');
+                setTimeout(function() {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 50);
+            }
+        }
+
+        function hideAllPaths() {
+            document.querySelectorAll('.path-wrap').forEach(function(p) { p.classList.add('start-hidden'); });
+        }
+    </script>
+
+</body>
+</html>

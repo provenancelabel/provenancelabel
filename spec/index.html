@@ -111,6 +111,7 @@
     <nav>
         <a href="/" class="logo">PROVENANCE LABEL</a>
         <a href="/spec" class="active">Spec</a>
+        <a href="/start">Get Started</a>
         <a href="/join">Join</a>
         <a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a>
     </nav>
@@ -122,9 +123,9 @@
             <h1>How a Provenance Label works</h1>
             <p>A label is a short declaration: who made this, when, and how much of it came from a human versus an AI. That's it.</p>
             <div class="spec-meta">
-                <span>v1.0</span>
-                <span>Draft</span>
+                <span>v1.2</span>
                 <span>Published 2026-02-17</span>
+                <span>Updated 2026-06-01</span>
                 <span>CC BY 4.0</span>
             </div>
         </header>
@@ -230,10 +231,36 @@
             <a href="https://registry.provenancelabel.org" class="btn">Registry →</a>
         </div>
 
+        <hr class="section-divider">
+
+        <h2>Changelog</h2>
+        <table class="field-table">
+            <thead>
+                <tr><th>Version</th><th>Date</th><th>Changes</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>v1.2</td>
+                    <td>2026-06-01</td>
+                    <td>Non-persuadable split estimation — AI may not adjust contribution percentages based on user preference, only new factual information. ChatGPT Custom GPT deployed.</td>
+                </tr>
+                <tr>
+                    <td>v1.1</td>
+                    <td>2026-03-06</td>
+                    <td>Added <code>work_title</code>, <code>human_role</code>, <code>ai_role</code> fields to long format and JSON schema. Introduced <code>plgen</code> command set: init, generate, register, status, validate, formats, help, cancel.</td>
+                </tr>
+                <tr>
+                    <td>v1.0</td>
+                    <td>2026-02-17</td>
+                    <td>Initial release. Core label format, required and optional fields, short and long output formats.</td>
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 
     <footer>
-        <span>Provenance Label v1.0 — CC BY 4.0 / MIT</span>
+        <span>Provenance Label v1.2 — CC BY 4.0 / MIT</span>
         <span>
             <a href="/spec">Spec</a> &nbsp;·&nbsp;
             <a href="/join">Join</a> &nbsp;·&nbsp;
