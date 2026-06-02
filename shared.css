@@ -314,6 +314,29 @@ footer a:hover { color: var(--black); }
 .copy-btn:hover { background: var(--accent); color: var(--white); border-color: var(--accent); }
 .copy-btn.copied { background: #2a7a4b; color: var(--white); border-color: #2a7a4b; }
 
+/* Light-background copyable prompt block */
+.copy-wrap { position: relative; margin: 16px 0; }
+
+.copy-pre {
+    background: var(--gray-light);
+    color: var(--black);
+    border: 1px solid var(--gray-mid);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 16px 20px;
+    padding-right: 80px;
+    border-radius: 2px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+}
+
+.copy-pre-scroll {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
 .output-toggle {
     display: flex;
     border: 1px solid var(--gray-mid);

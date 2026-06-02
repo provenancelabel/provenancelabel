@@ -292,8 +292,8 @@
                     <div class="step-content">
                         <h3>At the end of your next session, paste this prompt</h3>
                         <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the Claude conversation you've been working in.</p>
-                        <div style="position:relative; margin-top:16px;">
-                            <pre id="midClaudePrompt" style="background:var(--gray-light); color:var(--black); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Based on our collaboration, generate a Provenance Label v1.2.
+                        <div class="copy-wrap">
+                            <pre id="midClaudePrompt" class="copy-pre">Based on our collaboration, generate a Provenance Label v1.2.
 My estimated overall split (including work before this session): [X]% human / [Y]% AI.
 
 @provenance 1.2
@@ -309,7 +309,7 @@ Requirements:
 - Use my prior estimate as the baseline
 - Be honest, not flattering
 - Output only the label block above, ready to copy-paste</pre>
-                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyMidClaudeBtn" onclick="copyStartPrompt('midClaudePrompt','copyMidClaudeBtn')">Copy</button>
+                            <button class="copy-btn" id="copyMidClaudeBtn" onclick="copyStartPrompt('midClaudePrompt','copyMidClaudeBtn')">Copy</button>
                         </div>
                     </div>
                 </div>
@@ -357,8 +357,8 @@ Requirements:
                     <div class="step-content">
                         <h3>At the end of your next session, paste this prompt</h3>
                         <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the ChatGPT conversation you've been working in.</p>
-                        <div style="position:relative; margin-top:16px;">
-                            <pre id="midChatGPTPrompt" style="background:var(--gray-light); color:var(--black); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Based on our collaboration, generate a Provenance Label v1.2.
+                        <div class="copy-wrap">
+                            <pre id="midChatGPTPrompt" class="copy-pre">Based on our collaboration, generate a Provenance Label v1.2.
 My estimated overall split (including work before this session): [X]% human / [Y]% AI.
 
 @provenance 1.2
@@ -374,7 +374,7 @@ Requirements:
 - Use my prior estimate as the baseline
 - Be honest, not flattering
 - Output only the label block above, ready to copy-paste</pre>
-                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyMidChatGPTBtn" onclick="copyStartPrompt('midChatGPTPrompt','copyMidChatGPTBtn')">Copy</button>
+                            <button class="copy-btn" id="copyMidChatGPTBtn" onclick="copyStartPrompt('midChatGPTPrompt','copyMidChatGPTBtn')">Copy</button>
                         </div>
                     </div>
                 </div>
@@ -467,8 +467,8 @@ Requirements:
                     <div class="step-content">
                         <h3>Open Claude and paste this prompt</h3>
                         <p>Open any Claude conversation and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
-                        <div style="position:relative; margin-top:16px;">
-                            <pre id="doneClaudePrompt" style="background:var(--gray-light); color:var(--black); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Generate a Provenance Label v1.2 for completed work.
+                        <div class="copy-wrap">
+                            <pre id="doneClaudePrompt" class="copy-pre">Generate a Provenance Label v1.2 for completed work.
 My estimated split: [X]% human / [Y]% AI.
 
 @provenance 1.2
@@ -484,7 +484,7 @@ Requirements:
 - Use my estimate above as the split
 - Be honest, not flattering
 - Output only the label block above, ready to copy-paste</pre>
-                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyDoneClaudeBtn" onclick="copyStartPrompt('doneClaudePrompt','copyDoneClaudeBtn')">Copy</button>
+                            <button class="copy-btn" id="copyDoneClaudeBtn" onclick="copyStartPrompt('doneClaudePrompt','copyDoneClaudeBtn')">Copy</button>
                         </div>
                     </div>
                 </div>
@@ -524,8 +524,8 @@ Requirements:
                     <div class="step-content">
                         <h3>Open ChatGPT and paste this prompt</h3>
                         <p>Open any ChatGPT conversation and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
-                        <div style="position:relative; margin-top:16px;">
-                            <pre id="doneChatGPTPrompt" style="background:var(--gray-light); color:var(--black); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Generate a Provenance Label v1.2 for completed work.
+                        <div class="copy-wrap">
+                            <pre id="doneChatGPTPrompt" class="copy-pre">Generate a Provenance Label v1.2 for completed work.
 My estimated split: [X]% human / [Y]% AI.
 
 @provenance 1.2
@@ -541,7 +541,7 @@ Requirements:
 - Use my estimate above as the split
 - Be honest, not flattering
 - Output only the label block above, ready to copy-paste</pre>
-                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyDoneChatGPTBtn" onclick="copyStartPrompt('doneChatGPTPrompt','copyDoneChatGPTBtn')">Copy</button>
+                            <button class="copy-btn" id="copyDoneChatGPTBtn" onclick="copyStartPrompt('doneChatGPTPrompt','copyDoneChatGPTBtn')">Copy</button>
                         </div>
                     </div>
                 </div>

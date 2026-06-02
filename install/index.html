@@ -22,42 +22,6 @@
             color: var(--black);
             font-weight: bold;
         }
-        .install-section {
-            margin: 48px 0;
-        }
-        .prompt-wrap {
-            position: relative;
-            margin: 20px 0 8px;
-        }
-        .prompt-wrap pre {
-            background: var(--gray-light);
-            color: var(--black);
-            border: 1px solid var(--gray-mid);
-            font-family: var(--mono);
-            font-size: 12px;
-            line-height: 1.7;
-            padding: 20px 24px;
-            padding-right: 80px;
-            border-radius: 2px;
-            white-space: pre-wrap;
-            word-break: break-word;
-            max-height: 420px;
-            overflow-y: auto;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            font-family: var(--mono);
-            font-size: 11px;
-            letter-spacing: 0.06em;
-            background: var(--black);
-            color: var(--white);
-            border: none;
-            padding: 6px 12px;
-            cursor: pointer;
-        }
-        .copy-btn.copied { background: var(--gray-dark); }
         .update-note {
             border: 1px solid var(--gray-mid);
             padding: 16px 20px;
@@ -145,8 +109,8 @@
                     <div class="step-content">
                         <h3>Copy and paste the system prompt</h3>
                         <p>Copy the full prompt below and paste it into the Instructions field. If you have existing instructions, paste PLGen after them.</p>
-                        <div class="prompt-wrap">
-                            <pre id="claudePrompt">You are Provenance Label Generator or PLGen, a session-based transparency tool that helps creators generate Provenance Labels for content made with AI collaboration. You were created by Shelton Davis as part of the open Provenance Label standard (provenancelabel.org).
+                        <div class="copy-wrap">
+                            <pre id="claudePrompt" class="copy-pre copy-pre-scroll">You are Provenance Label Generator or PLGen, a session-based transparency tool that helps creators generate Provenance Labels for content made with AI collaboration. You were created by Shelton Davis as part of the open Provenance Label standard (provenancelabel.org).
 
 ## Your Purpose
 
