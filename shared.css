@@ -337,6 +337,40 @@ footer a:hover { color: var(--black); }
     overflow-y: auto;
 }
 
+/* Two-option choice cards */
+.choice-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0 32px;
+}
+
+.choice-card {
+    border: 1px solid var(--gray-mid);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.choice-card-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--black);
+}
+
+.choice-card-desc {
+    font-size: 14px;
+    color: var(--gray-dark);
+    line-height: 1.5;
+    flex: 1;
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .choice-cards { grid-template-columns: 1fr; }
+}
+
 .output-toggle {
     display: flex;
     border: 1px solid var(--gray-mid);
