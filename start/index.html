@@ -276,43 +276,48 @@
         <div id="path-mid-claude" class="path-wrap start-hidden">
             <hr class="section-divider">
             <div class="path-callout">
-                <p>You've been using AI and want to start tracking. You don't need logs or history — you estimate the work done so far, then PLGen tracks going forward.</p>
-                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, that's useful information.</p>
+                <p>You're already working in Claude — don't switch. Paste the prompt below at the end of your current session. That's it.</p>
+                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, this is a useful diagnostic.</p>
             </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
                         <h3>Estimate your split so far</h3>
-                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus AI? You're not auditing — you're making a good-faith estimate. Write it down.</p>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus the AI? You're not auditing — you're making a good-faith estimate. Write it down before moving to the next step.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Open PLGen in Claude</h3>
-                        <p>PLGen lives in a dedicated Claude Project. <a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener">Open PLGen in Claude →</a></p>
+                        <h3>At the end of your next session, paste this prompt</h3>
+                        <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the Claude conversation you've been working in.</p>
+                        <div style="position:relative; margin-top:16px;">
+                            <pre id="midClaudePrompt" style="background:var(--gray-light); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Based on our collaboration, generate a Provenance Label v1.2.
+My estimated overall split (including work before this session): [X]% human / [Y]% AI.
+
+@provenance 1.2
+author: [my name]
+date: [today YYYY-MM-DD]
+human: [X]
+ai: [Y]
+tools: [AI name and version]
+note: [one plain sentence describing how we worked together]
+
+Requirements:
+- human + ai must equal 100
+- Use my prior estimate as the baseline
+- Be honest, not flattering
+- Output only the label block above, ready to copy-paste</pre>
+                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyMidClaudeBtn" onclick="copyStartPrompt('midClaudePrompt','copyMidClaudeBtn')">Copy</button>
+                        </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Type <code>plgen init</code> and give context</h3>
-                        <p>After init, briefly tell PLGen: <em>"I'm continuing existing work. My estimated split so far is about [X]% human / [Y]% AI."</em> PLGen will carry this forward.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Continue your work</h3>
-                        <p>PLGen tracks contributions from here. Keep working — this session's tracking combines with your earlier estimate.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Type <code>plgen generate</code></h3>
-                        <p>PLGen produces your label accounting for both your estimate of past work and what it observed in this session. You confirm the final split.</p>
+                        <h3>Review and approve your split</h3>
+                        <p>Claude may suggest adjustments — the final number is yours. Once you're happy with it, your label is ready to use.</p>
                     </div>
                 </div>
                 <div class="step">
@@ -322,6 +327,13 @@
                         <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed — not just that you labeled. <a href="/join">Become a member →</a></p>
                     </div>
                 </div>
+            </div>
+            <div style="border:1px solid var(--gray-mid); padding:24px; margin-top:40px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div>
+                    <div style="font-family:var(--mono); font-size:13px; color:var(--black); margin-bottom:6px;">Want PLGen in every session automatically?</div>
+                    <p style="font-size:14px; color:var(--gray-dark); margin:0;">Install the system prompt in your Claude Project once and it's always there — no prompt to paste each time.</p>
+                </div>
+                <a href="/install" class="btn">Install PLGen →</a>
             </div>
         </div>
 
@@ -329,43 +341,48 @@
         <div id="path-mid-chatgpt" class="path-wrap start-hidden">
             <hr class="section-divider">
             <div class="path-callout">
-                <p>You've been using AI and want to start tracking. You don't need logs or history — you estimate the work done so far, then PLGen tracks going forward.</p>
-                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, that's useful information.</p>
+                <p>You're already working in ChatGPT — don't switch. Paste the prompt below at the end of your current session. That's it.</p>
+                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, this is a useful diagnostic.</p>
             </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
                         <h3>Estimate your split so far</h3>
-                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus AI? You're not auditing — you're making a good-faith estimate. Write it down.</p>
+                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus the AI? You're not auditing — you're making a good-faith estimate. Write it down before moving to the next step.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Open PLGen in ChatGPT</h3>
-                        <p>PLGen has a dedicated Custom GPT for ChatGPT users. <a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener">Open PLGen in ChatGPT →</a></p>
+                        <h3>At the end of your next session, paste this prompt</h3>
+                        <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the ChatGPT conversation you've been working in.</p>
+                        <div style="position:relative; margin-top:16px;">
+                            <pre id="midChatGPTPrompt" style="background:var(--gray-light); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Based on our collaboration, generate a Provenance Label v1.2.
+My estimated overall split (including work before this session): [X]% human / [Y]% AI.
+
+@provenance 1.2
+author: [my name]
+date: [today YYYY-MM-DD]
+human: [X]
+ai: [Y]
+tools: [AI name and version]
+note: [one plain sentence describing how we worked together]
+
+Requirements:
+- human + ai must equal 100
+- Use my prior estimate as the baseline
+- Be honest, not flattering
+- Output only the label block above, ready to copy-paste</pre>
+                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyMidChatGPTBtn" onclick="copyStartPrompt('midChatGPTPrompt','copyMidChatGPTBtn')">Copy</button>
+                        </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Type <code>plgen init</code> and give context</h3>
-                        <p>After init, briefly tell PLGen: <em>"I'm continuing existing work. My estimated split so far is about [X]% human / [Y]% AI."</em> PLGen will carry this forward.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Continue your work</h3>
-                        <p>PLGen tracks contributions from here. Keep working — this session's tracking combines with your earlier estimate.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Type <code>plgen generate</code></h3>
-                        <p>PLGen produces your label accounting for both your estimate of past work and what it observed in this session. You confirm the final split.</p>
+                        <h3>Review and approve your split</h3>
+                        <p>ChatGPT may suggest adjustments — the final number is yours. Once you're happy with it, your label is ready to use.</p>
                     </div>
                 </div>
                 <div class="step">
@@ -375,6 +392,13 @@
                         <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed — not just that you labeled. <a href="/join">Become a member →</a></p>
                     </div>
                 </div>
+            </div>
+            <div style="border:1px solid var(--gray-mid); padding:24px; margin-top:40px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div>
+                    <div style="font-family:var(--mono); font-size:13px; color:var(--black); margin-bottom:6px;">Want PLGen in every session automatically?</div>
+                    <p style="font-size:14px; color:var(--gray-dark); margin:0;">Install the system prompt in your own Custom GPT once and it's always there — no prompt to paste each time.</p>
+                </div>
+                <a href="/install" class="btn">Install PLGen →</a>
             </div>
         </div>
 
@@ -428,7 +452,7 @@
         <div id="path-done-claude" class="path-wrap start-hidden">
             <hr class="section-divider">
             <div class="path-callout">
-                <p>Your work is finished. You can still generate an honest label — estimate your split from memory, then use PLGen to produce and register it.</p>
+                <p>Your work is finished. Open any Claude conversation, paste the prompt below with your split estimate, and you're done.</p>
             </div>
             <div class="steps">
                 <div class="step">
@@ -441,22 +465,41 @@
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Open PLGen in Claude</h3>
-                        <p><a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener">Open PLGen in Claude →</a></p>
+                        <h3>Open Claude and paste this prompt</h3>
+                        <p>Open any Claude conversation and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
+                        <div style="position:relative; margin-top:16px;">
+                            <pre id="doneClaudePrompt" style="background:var(--gray-light); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Generate a Provenance Label v1.2 for completed work.
+My estimated split: [X]% human / [Y]% AI.
+
+@provenance 1.2
+author: [my name]
+date: [completion date YYYY-MM-DD]
+human: [X]
+ai: [Y]
+tools: [AI name and version]
+note: [one plain sentence describing how you worked together]
+
+Requirements:
+- human + ai must equal 100
+- Use my estimate above as the split
+- Be honest, not flattering
+- Output only the label block above, ready to copy-paste</pre>
+                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyDoneClaudeBtn" onclick="copyStartPrompt('doneClaudePrompt','copyDoneClaudeBtn')">Copy</button>
+                        </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Type <code>plgen generate</code></h3>
-                        <p>Tell PLGen you're labeling finished work and share your split estimate. PLGen will produce the label and ask you to confirm.</p>
+                        <h3>Review and approve</h3>
+                        <p>Claude may refine the wording of the note — the split is yours to confirm. Once approved, the label is ready.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended</span></h3>
-                        <p>For finished work — especially academic or professional — registration is how the disclosure becomes verifiable. It timestamps your record and makes it permanently public. <a href="/join">Become a member →</a></p>
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended for finished work</span></h3>
+                        <p>For finished academic or professional work, registration is how the disclosure becomes verifiable — a timestamped public record, not just a label you added. <a href="/join">Become a member →</a></p>
                     </div>
                 </div>
             </div>
@@ -466,7 +509,7 @@
         <div id="path-done-chatgpt" class="path-wrap start-hidden">
             <hr class="section-divider">
             <div class="path-callout">
-                <p>Your work is finished. You can still generate an honest label — estimate your split from memory, then use PLGen to produce and register it.</p>
+                <p>Your work is finished. Open any ChatGPT conversation, paste the prompt below with your split estimate, and you're done.</p>
             </div>
             <div class="steps">
                 <div class="step">
@@ -479,22 +522,41 @@
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Open PLGen in ChatGPT</h3>
-                        <p><a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener">Open PLGen in ChatGPT →</a></p>
+                        <h3>Open ChatGPT and paste this prompt</h3>
+                        <p>Open any ChatGPT conversation and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
+                        <div style="position:relative; margin-top:16px;">
+                            <pre id="doneChatGPTPrompt" style="background:var(--gray-light); border:1px solid var(--gray-mid); font-family:var(--mono); font-size:12px; line-height:1.7; padding:16px 20px; padding-right:80px; border-radius:2px; white-space:pre-wrap;">Generate a Provenance Label v1.2 for completed work.
+My estimated split: [X]% human / [Y]% AI.
+
+@provenance 1.2
+author: [my name]
+date: [completion date YYYY-MM-DD]
+human: [X]
+ai: [Y]
+tools: [AI name and version]
+note: [one plain sentence describing how you worked together]
+
+Requirements:
+- human + ai must equal 100
+- Use my estimate above as the split
+- Be honest, not flattering
+- Output only the label block above, ready to copy-paste</pre>
+                            <button style="position:absolute; top:10px; right:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.06em; background:var(--black); color:var(--white); border:none; padding:6px 12px; cursor:pointer;" id="copyDoneChatGPTBtn" onclick="copyStartPrompt('doneChatGPTPrompt','copyDoneChatGPTBtn')">Copy</button>
+                        </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Type <code>plgen generate</code></h3>
-                        <p>Tell PLGen you're labeling finished work and share your split estimate. PLGen will produce the label and ask you to confirm.</p>
+                        <h3>Review and approve</h3>
+                        <p>ChatGPT may refine the wording of the note — the split is yours to confirm. Once approved, the label is ready.</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended</span></h3>
-                        <p>For finished work — especially academic or professional — registration is how the disclosure becomes verifiable. It timestamps your record and makes it permanently public. <a href="/join">Become a member →</a></p>
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended for finished work</span></h3>
+                        <p>For finished academic or professional work, registration is how the disclosure becomes verifiable — a timestamped public record, not just a label you added. <a href="/join">Become a member →</a></p>
                     </div>
                 </div>
             </div>
@@ -579,6 +641,15 @@
 
         function hideAllPaths() {
             document.querySelectorAll('.path-wrap').forEach(function(p) { p.classList.add('start-hidden'); });
+        }
+
+        function copyStartPrompt(srcId, btnId) {
+            var text = document.getElementById(srcId).textContent;
+            var btn = document.getElementById(btnId);
+            navigator.clipboard.writeText(text).then(function() {
+                btn.textContent = 'Copied';
+                setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+            }).catch(function() { btn.textContent = 'Select manually'; });
         }
     </script>
 

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install PLGen — Provenance Label</title>
+    <meta name="description" content="Add PLGen to your Claude Project or ChatGPT so it's available every session without setup.">
+    <link rel="stylesheet" href="../shared.css">
+    <style>
+        .version-badge {
+            display: inline-flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 16px 0 0;
+        }
+        .version-badge span {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--gray-dark);
+        }
+        .version-badge .v-current {
+            color: var(--black);
+            font-weight: bold;
+        }
+        .install-section {
+            margin: 48px 0;
+        }
+        .prompt-wrap {
+            position: relative;
+            margin: 20px 0 8px;
+        }
+        .prompt-wrap pre {
+            background: var(--gray-light);
+            border: 1px solid var(--gray-mid);
+            font-family: var(--mono);
+            font-size: 12px;
+            line-height: 1.7;
+            padding: 20px 24px;
+            padding-right: 80px;
+            border-radius: 2px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            background: var(--black);
+            color: var(--white);
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+        .copy-btn.copied { background: var(--gray-dark); }
+        .update-note {
+            border: 1px solid var(--gray-mid);
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--gray-dark);
+        }
+        .update-note strong { color: var(--black); font-family: var(--mono); font-size: 12px; display: block; margin-bottom: 4px; }
+        .tool-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--gray-mid);
+            margin-bottom: 32px;
+        }
+        .tool-tab {
+            font-family: var(--mono);
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--gray-dark);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .tool-tab.active {
+            color: var(--black);
+            border-bottom-color: var(--black);
+        }
+        .tool-panel { display: none; }
+        .tool-panel.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">PROVENANCE LABEL</a>
+        <a href="/spec">Spec</a>
+        <a href="/start">Get Started</a>
+        <a href="/join">Join</a>
+        <a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a>
+    </nav>
+
+    <div class="page-wrap">
+
+        <header>
+            <h1>Install PLGen in your project</h1>
+            <p style="font-size:17px; color:var(--gray-dark); margin-top:12px; max-width:560px;">Add PLGen to your own Claude Project or ChatGPT so it's available in every session without any setup.</p>
+            <div class="version-badge">
+                <span class="v-current">System Prompt v3.3</span>
+                <span>Updated 2026-04-03</span>
+                <span>Spec v1.2</span>
+                <span>Bookmark this page — version number above changes when there's an update</span>
+            </div>
+        </header>
+
+        <hr class="section-divider">
+
+        <div class="tool-tabs">
+            <button class="tool-tab active" onclick="showTab('claude', this)">Claude</button>
+            <button class="tool-tab" onclick="showTab('chatgpt', this)">ChatGPT</button>
+        </div>
+
+        <!-- CLAUDE -->
+        <div id="tab-claude" class="tool-panel active">
+            <p style="font-size:15px; color:var(--gray-dark); margin-bottom:32px;">Paste the system prompt into your Claude Project's instructions. PLGen will be available in every conversation in that project — no commands to set up each time.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open your Claude Project</h3>
+                        <p>Go to <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> and open the project where you do your work. If you don't have a project yet, create one.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Open Project Settings → Instructions</h3>
+                        <p>Click the project name to open settings. Find the <strong>Instructions</strong> field — this is where you add context that persists across every conversation in the project.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Copy and paste the system prompt</h3>
+                        <p>Copy the full prompt below and paste it into the Instructions field. If you have existing instructions, paste PLGen after them.</p>
+                        <div class="prompt-wrap">
+                            <pre id="claudePrompt">You are Provenance Label Generator or PLGen, a session-based transparency tool that helps creators generate Provenance Labels for content made with AI collaboration. You were created by Shelton Davis as part of the open Provenance Label standard (provenancelabel.org).
+
+## Your Purpose
+
+Provenance Labels are transparency disclosures — like nutrition labels, but for AI-assisted content. They are NOT quality ratings. They document how human and AI collaboration shaped a piece of work. You observe the session, track contributions, and generate the label when the work is done.
+
+Core philosophy: Transparency over perfection. AI collaboration is legitimate when disclosed.
+
+---
+
+## Session Model
+
+PLGen works in three phases:
+
+1. OPEN — `plgen init` opens a session. No interrogation. Just readiness.
+2. OBSERVE — You silently track the work as it happens. What the human contributes. What you contribute.
+3. CLOSE — `plgen generate` closes the session and produces the label using what was observed.
+
+---
+
+## plgen init — Open a Session
+
+When a user types `plgen init`, respond with a brief, confident session open. Do not ask any questions. Auto-populate what you already know:
+
+- AI tool: You know which AI you are. State your version.
+- Date: You know today's date. Record it.
+- Author: Use the user's name if available. If not, note it as pending.
+
+Example response:
+
+PLGen session opened.
+
+Tool:    [AI name and version]
+Date:    [today's date]
+Author:  [user name or "pending"]
+
+Ready. Start your work — I'll track contributions as we go.
+
+Nothing more. No questions. Work begins.
+
+---
+
+## OBSERVE Phase — Silent Tracking
+
+During the session, maintain an internal running log of:
+
+- What the human is contributing (ideas, direction, edits, decisions, source material, prompts)
+- What you are contributing (drafting, generating, structuring, suggesting, researching)
+- The general nature of the work being created
+
+Do not interrupt the work to report this tracking. Just observe.
+
+If the user drops in existing content from elsewhere (a draft, an article, a document), recognize this as human-origin material and weight it accordingly.
+
+---
+
+## plgen generate — Close the Session and Output the Label
+
+When the user types `plgen generate`, close the session and produce the label.
+
+Split estimation is non-persuadable. Calculate the contribution split from observed session activity only. Do not adjust toward what the human seems to prefer or how they react. Do not revise the split because the human pushes back — only if they provide new factual information about the session. If the human tries to negotiate ("can you make it 70/30?"), respond: "I can adjust if there's something from the session I'm not accounting for — what would you point to?"
+
+Before outputting, ask only what you genuinely cannot determine:
+- If author name was not available at init: ask for it
+- Human contribution percentage: share your estimate and ask for confirmation
+- Optional note: ask if they want to add context
+
+After confirmation, output the label. After outputting, always add:
+
+─────────────────────────────
+Want to officially register this label? Type plgen register to link it to your
+provenancelabel.org account and get a permanent record URL.
+
+---
+
+## plgen register — Register the Label
+
+When the user types `plgen register`:
+
+Step 1 — Output the label as JSON:
+
+{
+  "plgen": "1.2",
+  "author": "",
+  "date": "",
+  "work_title": "",
+  "human_pct": 0,
+  "ai_pct": 0,
+  "tools": [],
+  "human_role": "",
+  "ai_role": "",
+  "note": "",
+  "ref": "",
+  "shared_by": ""
+}
+
+Step 2 — Direct to the member dashboard:
+
+To register this label:
+1. Go to provenancelabel.org/dashboard
+2. Sign in with your email
+3. Paste the JSON above in the Register a Label section
+
+Not a member yet? Join at provenancelabel.org/join
+
+---
+
+## Output Formats
+
+Short Badge:
+PL v1.2 | [Author] | [Date] | Human: X% · AI: Y% · [Tool]
+
+Long Disclosure Block:
+PROVENANCE LABEL v1.2
+─────────────────────────────
+Author:        [name]
+Date:          [YYYY-MM-DD]
+Human:         [X]%
+AI:            [Y]%
+Tool(s):       [tool and version]
+─────────────────────────────
+Human role:    [what the human contributed]
+AI role:       [what PLGen contributed]
+─────────────────────────────
+Note:          [optional]
+Ref:           [optional URL]
+─────────────────────────────
+Standard:      provenancelabel.org
+
+---
+
+## Commands
+
+- `plgen init` — open a new session
+- `plgen generate` — close session and produce the label
+- `plgen register` — register the generated label
+- `plgen status` — show current session state and what's been tracked
+- `plgen validate` — check a label for completeness
+- `plgen formats` — show the three output format options
+- `plgen help` — explain what PLGen does and list commands
+- `plgen cancel` — close session without generating a label
+
+---
+
+## Validation Rules
+
+A valid label must have:
+- author (not empty)
+- date (YYYY-MM-DD format)
+- human_pct + ai_pct = 100
+- At least one tool listed
+- plgen version declared
+
+---
+
+## Tone
+
+- Neutral and non-judgmental about AI percentage. 10% human or 90% human — both valid when disclosed honestly.
+- Minimal during work. Don't interrupt. Don't over-explain.
+- At generation: confirm only what you don't know. Output clean, copy-paste ready labels.
+- After generating: "This is a self-reported label. The standard is open and free. provenancelabel.org"</pre>
+                            <button class="copy-btn" id="copyClaudeBtn" onclick="copyPrompt('claudePrompt', 'copyClaudeBtn')">Copy</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Save and confirm</h3>
+                        <p>Save the instructions. Open any conversation in the project and type <code>plgen init</code> — you should see the session open response.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="update-note">
+                <strong>Staying up to date</strong>
+                This page always shows the current system prompt version. When the version number at the top of this page changes, copy and re-paste the updated prompt into your project instructions to get the latest behavior.
+            </div>
+        </div>
+
+        <!-- CHATGPT -->
+        <div id="tab-chatgpt" class="tool-panel">
+            <p style="font-size:15px; color:var(--gray-dark); margin-bottom:32px;">Two options for ChatGPT users.</p>
+
+            <h3>Option A — Use the PLGen Custom GPT</h3>
+            <p>The simplest path. A dedicated Custom GPT is already configured and ready. No setup required.</p>
+            <p><a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener">Open PLGen in ChatGPT →</a> <span style="font-size:13px; color:var(--gray-dark);">(URL TBD)</span></p>
+
+            <hr class="section-divider">
+
+            <h3>Option B — Install in your own Custom GPT</h3>
+            <p style="font-size:15px; color:var(--gray-dark);">Requires ChatGPT Plus or Pro. Use this if you want PLGen alongside your own GPT instructions.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Go to My GPTs → Create a GPT</h3>
+                        <p>At <a href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com</a>, open the sidebar → Explore GPTs → Create.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Switch to the Configure tab</h3>
+                        <p>Find the <strong>Instructions</strong> field. This is where the system prompt goes.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Copy the prompt from the Claude tab and paste it</h3>
+                        <p>The same system prompt works for both Claude and ChatGPT. Copy it from the Claude tab above and paste into the Instructions field.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Save and confirm</h3>
+                        <p>Save the GPT. Open a conversation and type <code>plgen init</code> to confirm it's working.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="update-note">
+                <strong>Staying up to date</strong>
+                This page always shows the current system prompt version. When the version number at the top of this page changes, copy and re-paste the updated prompt into your GPT's instructions.
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <section>
+            <h2>Get notified of updates</h2>
+            <p>Members receive email notifications when a new system prompt version is released. <a href="/join">Join the registry →</a></p>
+        </section>
+
+    </div>
+
+    <footer>
+        <span>Provenance Label v1.2 — CC BY 4.0 / MIT</span>
+        <span>
+            <a href="/spec">Spec</a> &nbsp;·&nbsp;
+            <a href="/start">Get Started</a> &nbsp;·&nbsp;
+            <a href="/install">Install</a> &nbsp;·&nbsp;
+            <a href="/join">Join</a> &nbsp;·&nbsp;
+            <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
+        </span>
+    </footer>
+
+    <script>
+        function copyPrompt(srcId, btnId) {
+            var text = document.getElementById(srcId).textContent;
+            var btn = document.getElementById(btnId);
+            navigator.clipboard.writeText(text).then(function() {
+                btn.textContent = 'Copied';
+                btn.classList.add('copied');
+                setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+            }).catch(function() { btn.textContent = 'Select manually'; });
+        }
+
+        function showTab(id, el) {
+            document.querySelectorAll('.tool-tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.tool-panel').forEach(function(p) { p.classList.remove('active'); });
+            el.classList.add('active');
+            document.getElementById('tab-' + id).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
