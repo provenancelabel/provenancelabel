@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded AI Tools — Provenance Label</title>
+    <meta name="description" content="Using Miro, Notion, Canva, or another tool with built-in AI? Get a standard Provenance Label from any AI with one prompt.">
+    <link rel="stylesheet" href="../shared.css">
+    <style>
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 24px 0 48px;
+        }
+        .tool-card {
+            border: 1px solid var(--gray-mid);
+            padding: 24px;
+        }
+        .tool-name {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--black);
+            margin-bottom: 6px;
+        }
+        .tool-ai {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--gray-dark);
+            margin-bottom: 14px;
+        }
+        .tool-card p {
+            font-size: 14px;
+            color: var(--gray-dark);
+            line-height: 1.5;
+            margin: 0 0 12px;
+        }
+        .tool-card p:last-child { margin-bottom: 0; }
+        .tool-tip {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--black);
+            background: var(--gray-light);
+            border-left: 2px solid var(--accent);
+            padding: 8px 12px;
+            margin-top: 12px;
+        }
+        .confirmed-badge {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            color: #2a7a4b;
+            border: 1px solid #2a7a4b;
+            padding: 2px 8px;
+            border-radius: 2px;
+            margin-bottom: 12px;
+        }
+        .unconfirmed-badge {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            color: var(--gray-dark);
+            border: 1px solid var(--gray-mid);
+            padding: 2px 8px;
+            border-radius: 2px;
+            margin-bottom: 12px;
+        }
+        @media (max-width: 600px) {
+            .tool-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">PROVENANCE LABEL</a>
+        <a href="/spec">Spec</a>
+        <a href="/start">Get Started</a>
+        <a href="/join">Join</a>
+        <a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a>
+    </nav>
+
+    <div class="page-wrap">
+
+        <header>
+            <h1>Embedded AI tools</h1>
+            <p style="font-size:17px; color:var(--gray-dark); margin-top:12px; max-width:580px;">Using Miro, Notion, Canva, or another tool with AI built in? You can get a standard Provenance Label from any of them — you just need to give the AI the right format to follow.</p>
+        </header>
+
+        <hr class="section-divider">
+
+        <section>
+            <h2>Why this is different</h2>
+            <p>With Claude or ChatGPT, you can install PLGen and it tracks your session from the start. Embedded AI tools work differently — they're woven into the product, not a chat interface. You can't run <code>plgen init</code> inside Miro.</p>
+            <p>But these AIs already know what Provenance Label is. Paste the prompt below at the end of your session and describe your context — the AI will generate a properly formatted label. No setup required.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section>
+            <h2>The prompt</h2>
+            <p>Copy this into any AI-powered tool at the end of your session. Fill in the three bracketed fields before sending.</p>
+
+            <div class="copy-wrap" style="margin-top:20px;">
+                <pre id="embeddedPrompt" class="copy-pre">Create a Provenance Label for this work using the provenancelabel.org v1.2 standard.
+
+My context: [describe the work — what you made, what you provided, what the AI did]
+My name: [your name or handle]
+My estimated split: [X]% human / [Y]% AI
+
+Output ONLY the label in this exact format — no additional commentary, no explanations:
+
+PROVENANCE LABEL v1.2
+─────────────────────────────
+Author:        [my name]
+Date:          [today's date YYYY-MM-DD]
+Human:         [X]%
+AI:            [Y]%
+Tool(s):       [name of this AI tool and version if known]
+─────────────────────────────
+Human role:    [one sentence — what I contributed]
+AI role:       [one sentence — what this AI contributed]
+─────────────────────────────
+Standard:      provenancelabel.org</pre>
+                <button class="copy-btn" id="copyEmbeddedBtn" onclick="copyPrompt()">Copy</button>
+            </div>
+
+            <p style="font-size:14px; color:var(--gray-dark); margin-top:8px;">The AI will fill in the roles and confirm your split. If it adds extra commentary, ask it to output the label block only.</p>
+        </section>
+
+        <hr class="section-divider">
+
+        <section>
+            <h2>Tool-specific notes</h2>
+            <p>Each tool handles the output a little differently. Here's what to expect and how to make the label look right.</p>
+
+            <div class="tool-grid">
+
+                <div class="tool-card">
+                    <div class="tool-name">Miro</div>
+                    <div class="tool-ai">Sidekick</div>
+                    <div class="confirmed-badge">✓ Confirmed</div>
+                    <p>Miro's Sidekick understands the standard and will generate a label when prompted. Paste the prompt into the Sidekick panel after your session.</p>
+                    <p>To display the label on your board: add a Text element, paste the label block in, and set the font to a monospace option (Courier New or similar). The <code>─────</code> separators create the visual structure.</p>
+                    <div class="tool-tip">Add your label as a sticky note or text frame near the work it describes.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Notion</div>
+                    <div class="tool-ai">Notion AI</div>
+                    <div class="unconfirmed-badge">Likely works</div>
+                    <p>Use Notion AI (ask in any page) and paste the prompt. Notion AI follows structured output instructions reliably.</p>
+                    <p>To display: paste the label into a <strong>Code block</strong> (type <code>/code</code>). Code blocks in Notion preserve monospace formatting and the separator lines perfectly — this is the cleanest way to show a PLGen label in any Notion document.</p>
+                    <div class="tool-tip">A code block is the best PLGen container in any rich-text tool.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Canva</div>
+                    <div class="tool-ai">Magic Write / Canva AI</div>
+                    <div class="unconfirmed-badge">Likely works</div>
+                    <p>Use Magic Write in a text element and paste the prompt. Canva AI follows formatting instructions when given a clear output template.</p>
+                    <p>To display: paste the output into a text box. Set the font to a monospace option (Space Mono is available in Canva) to preserve the label's visual structure. Place it at the bottom of the design, like a document footer.</p>
+                    <div class="tool-tip">Space Mono in Canva gives the label an intentional, designed look that matches provenancelabel.org.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Google Docs</div>
+                    <div class="tool-ai">Gemini</div>
+                    <div class="unconfirmed-badge">Likely works</div>
+                    <p>Open the Gemini sidebar in Google Docs and paste the prompt. Describe your document and your collaboration split.</p>
+                    <p>To display: paste the label at the end of your document. Select it and apply a monospace font (Courier New or Roboto Mono). You can add a horizontal rule above it to visually separate it from your content.</p>
+                    <div class="tool-tip">Gemini in Docs is one of the most important tools to label — AI assistance there is often invisible and undisclosed.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Microsoft Word / PowerPoint</div>
+                    <div class="tool-ai">Copilot</div>
+                    <div class="unconfirmed-badge">Likely works</div>
+                    <p>Open the Copilot pane and paste the prompt. Describe the document or presentation and your collaboration.</p>
+                    <p>To display: paste the label into a text box using Consolas or Courier New. In Word, a footer or appendix works well. In PowerPoint, a small text element on the relevant slide or a dedicated final slide.</p>
+                    <div class="tool-tip">For presentations, a dedicated "About this deck" slide with the label is more visible than a footer.</div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-name">Figma</div>
+                    <div class="tool-ai">Figma AI</div>
+                    <div class="unconfirmed-badge">Likely works</div>
+                    <p>Use the Figma AI prompt field and paste the prompt. Describe your design work and the AI's contribution.</p>
+                    <p>To display: add a text layer using a monospace font (IBM Plex Mono or Roboto Mono). Place it in a low-opacity frame as a design annotation, or on a dedicated cover/handoff frame.</p>
+                    <div class="tool-tip">A PLGen label on a Figma handoff frame signals transparency to developers and stakeholders downstream.</div>
+                </div>
+
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <section>
+            <h2>After your label</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Put it on your work</h3>
+                        <p>Place the label where the work lives — on the board, in the document, in the footer of the design. Disclosure is only meaningful if it's visible alongside the work itself.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register it for a permanent record <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional but recommended</span></h3>
+                        <p>Registration gives your label a permanent ID and timestamped public record — especially useful for academic, professional, or client work where verifiable disclosure matters. Use the JSON format when registering. <a href="/register">Register a label →</a> &nbsp;·&nbsp; <a href="/join">Become a member →</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="section-divider">
+
+        <section>
+            <h2>Using Claude or ChatGPT instead?</h2>
+            <p style="font-size:15px; color:var(--gray-dark);">If you're working in a standalone AI chat tool rather than an embedded one, the full PLGen session tracking gives you more accurate split estimation. <a href="/start">Get started →</a></p>
+        </section>
+
+    </div>
+
+    <footer>
+        <span>Provenance Label v1.2 — CC BY 4.0 / MIT</span>
+        <span>
+            <a href="/spec">Spec</a> &nbsp;·&nbsp;
+            <a href="/install">Install</a> &nbsp;·&nbsp;
+            <a href="/embedded">Embedded Tools</a> &nbsp;·&nbsp;
+            <a href="/join">Join</a> &nbsp;·&nbsp;
+            <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
+        </span>
+    </footer>
+
+    <script>
+        function copyPrompt() {
+            var text = document.getElementById('embeddedPrompt').textContent;
+            var btn = document.getElementById('copyEmbeddedBtn');
+            navigator.clipboard.writeText(text).then(function() {
+                btn.textContent = 'Copied';
+                btn.classList.add('copied');
+                setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+            }).catch(function() { btn.textContent = 'Select manually'; });
+        }
+    </script>
+
+</body>
+</html>
