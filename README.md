@@ -8,9 +8,9 @@ An open standard for transparent disclosure of AI collaboration in creative work
 
 The Provenance Label is a simple, standardized way to show how human and AI worked together on content. Like nutrition labels for food, it provides transparency without judgment.
 
-## The Standard (v1.0)
+## The Standard (v1.2)
 ```
-PROVENANCE LABEL v1.0
+PROVENANCE LABEL v1.2
 Created: YYYY-MM-DD HH:MM UTC
 Updated: YYYY-MM-DD HH:MM UTC (optional)
 Edited: Yes/No
@@ -45,7 +45,7 @@ Or use the [Label Generator](https://provenance-label.github.io/provenance-label
 
 ### Blog Post
 ```
-PROVENANCE LABEL v1.0
+PROVENANCE LABEL v1.2
 Created: 2026-02-10 14:30 UTC
 Edited: No
 
@@ -59,7 +59,7 @@ AI drafted full post. Human edited for voice and cut 40%.
 
 ### Code Documentation
 ```
-PROVENANCE LABEL v1.0
+PROVENANCE LABEL v1.2
 Created: 2026-02-09 22:15 UTC
 Edited: No
 
@@ -70,6 +70,22 @@ AI models used: GitHub Copilot
 Process notes: Human wrote all logic. AI autocompleted
 boilerplate. Human reviewed and accepted 60% of suggestions.
 ```
+
+## Versioning
+
+The standard's version lives in one place: [`VERSION`](VERSION). Every other
+reference to it (site pages, `plgen.txt`, the Custom GPT prompt) is kept in
+sync from that file — never edit a version string directly in those files.
+
+To bump the version:
+```
+echo "1.3" > VERSION
+python3 scripts/sync-version.py
+```
+Review the diff, add a row to the Changelog table in [`spec/index.html`](spec/index.html)
+(that part is manual — a version bump should always say what changed), and commit.
+CI (`.github/workflows/version-check.yml` and the deploy workflow) fails the
+build if any file drifts from `VERSION`, so a bump can't merge or deploy half-applied.
 
 ## Contributing
 
@@ -123,14 +139,14 @@ SOFTWARE.
 
 ## 4. STANDARD.txt (For distribution)
 ```
-PROVENANCE LABEL STANDARD v1.0
+PROVENANCE LABEL STANDARD v1.2
 
 Released: February 2026
 License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 
 FORMAT:
 
-PROVENANCE LABEL v1.0
+PROVENANCE LABEL v1.2
 Created: YYYY-MM-DD HH:MM UTC
 Updated: YYYY-MM-DD HH:MM UTC (optional)
 Edited: Yes/No

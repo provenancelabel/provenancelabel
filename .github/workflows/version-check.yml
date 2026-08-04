@@ -1,0 +1,14 @@
+name: Version consistency check
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check all files match VERSION
+        run: python3 scripts/sync-version.py --check

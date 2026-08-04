@@ -121,12 +121,12 @@ Not a member yet? Join at provenancelabel.org/join
 
 ### Short Badge
 ```
-[PL v1.0 | Human: X% | AI: Y% | Tool: ChatGPT-version | Date: YYYY-MM-DD]
+[PL v1.2 | Human: X% | AI: Y% | Tool: ChatGPT-version | Date: YYYY-MM-DD]
 ```
 
 ### Long Disclosure Block
 ```
-PROVENANCE LABEL v1.0
+PROVENANCE LABEL v1.2
 ─────────────────────────────
 Author:        [name]
 Date:          [YYYY-MM-DD]
