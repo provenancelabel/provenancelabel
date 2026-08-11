@@ -41,6 +41,9 @@ nav {
 }
 
 nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--mono);
     font-size: 13px;
     font-weight: bold;
@@ -48,6 +51,12 @@ nav .logo {
     text-decoration: none;
     color: var(--black);
     margin-right: auto;
+}
+
+nav .logo-mark {
+    width: 26px;
+    height: 26px;
+    display: block;
 }
 
 nav a:not(.logo) {
@@ -182,6 +191,39 @@ footer a:hover { color: var(--black); }
 .hero {
     padding: 72px 0 64px;
     border-bottom: 1px solid var(--gray-mid);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+}
+
+.hero-content { min-width: 0; }
+
+.hero-mark {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 24px;
+}
+
+.hero-label {
+    flex-shrink: 0;
+    display: block;
+    width: 220px;
+    border: 1px solid var(--gray-mid);
+    transition: border-color 0.15s;
+}
+
+.hero-label:hover { border-color: var(--accent); }
+
+.hero-label img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 800px) {
+    .hero { flex-direction: column; align-items: flex-start; }
+    .hero-label { width: 100%; max-width: 280px; margin-top: 8px; }
 }
 
 .hero-eyebrow {
@@ -415,6 +457,31 @@ footer a:hover { color: var(--black); }
     color: var(--gray-dark);
     margin-bottom: 6px;
 }
+
+.real-example {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    border: 1px solid var(--gray-mid);
+    padding: 28px;
+    margin: 8px 0 28px;
+}
+
+.real-example img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.real-example-caption {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gray-dark);
+    line-height: 1.6;
+}
+
+.real-example-caption a { color: var(--accent); }
 
 .label-badge {
     display: inline-block;
