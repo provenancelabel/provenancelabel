@@ -79,7 +79,7 @@
 <body>
 
     <nav>
-        <a href="/" class="logo">PROVENANCE LABEL</a>
+        <a href="/" class="logo"><img src="/graphics/pl-logo-circle-boarder.png" alt="" class="logo-mark">PROVENANCE LABEL</a>
         <a href="/spec">Spec</a>
         <a href="/start">Get Started</a>
         <a href="/join">Join</a>
@@ -207,8 +207,7 @@
                 </div>
                 <div class="choice-card">
                     <div class="choice-card-title">One-off work</div>
-                    <p class="choice-card-desc">Use the standalone PLGen Custom GPT. Open it and start — everything's already configured, just for you.</p>
-                    <a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener" class="btn btn-ghost">Open PLGen in ChatGPT →</a>
+                    <p class="choice-card-desc">The standalone PLGen Custom GPT isn't live yet. For now, open a new ChatGPT conversation and paste in <a href="/plgen.txt" target="_blank" rel="noopener">the PLGen prompt</a> — same behavior, just for this session.</p>
                 </div>
             </div>
 
@@ -292,12 +291,13 @@
             </div>
         </div>
 
-        <!-- MID + CLAUDE -->
-        <div id="path-mid-claude" class="path-wrap start-hidden">
+        <!-- MID (universal — same steps regardless of AI tool) -->
+        <div id="path-mid-universal" class="path-wrap start-hidden">
             <hr class="section-divider">
             <div class="path-callout">
-                <p>You're already working in Claude — don't switch. Paste the prompt below at the end of your current session. That's it.</p>
+                <p>You're already working with AI — no need to switch tools. Paste the prompt below at the end of your session. That's it.</p>
                 <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, this is a useful diagnostic.</p>
+                <p>Using an embedded tool like Miro, Notion, or Canva instead of a chat interface? <a href="/embedded">See the embedded tools guide →</a></p>
             </div>
             <div class="steps">
                 <div class="step">
@@ -311,9 +311,9 @@
                     <div class="step-num"></div>
                     <div class="step-content">
                         <h3>At the end of your next session, paste this prompt</h3>
-                        <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the Claude conversation you've been working in.</p>
+                        <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the AI conversation you've been working in — Claude, ChatGPT, or anything else with a chat interface.</p>
                         <div class="copy-wrap">
-                            <pre id="midClaudePrompt" class="copy-pre">Based on our collaboration, generate a Provenance Label v1.2.
+                            <pre id="midUniversalPrompt" class="copy-pre">Based on our collaboration, generate a Provenance Label v1.2.
 My estimated overall split (including work before this session): [X]% human / [Y]% AI.
 
 @provenance 1.2
@@ -329,7 +329,7 @@ Requirements:
 - Use my prior estimate as the baseline
 - Be honest, not flattering
 - Output only the label block above, ready to copy-paste</pre>
-                            <button class="copy-btn" id="copyMidClaudeBtn" onclick="copyStartPrompt('midClaudePrompt','copyMidClaudeBtn')">Copy</button>
+                            <button class="copy-btn" id="copyMidUniversalBtn" onclick="copyStartPrompt('midUniversalPrompt','copyMidUniversalBtn')">Copy</button>
                         </div>
                     </div>
                 </div>
@@ -337,7 +337,7 @@ Requirements:
                     <div class="step-num"></div>
                     <div class="step-content">
                         <h3>Review and approve your split</h3>
-                        <p>Claude may suggest adjustments — the final number is yours. Once you're happy with it, your label is ready to use.</p>
+                        <p>Your AI may suggest adjustments — the final number is yours. Once you're happy with it, your label is ready to use.</p>
                     </div>
                 </div>
                 <div class="step">
@@ -348,257 +348,14 @@ Requirements:
                     </div>
                 </div>
             </div>
-            <p style="font-size:13px; color:var(--gray-dark); margin:40px 0 0;">Want PLGen available for every session going forward?</p>
-            <div class="choice-cards">
-                <div class="choice-card">
-                    <div class="choice-card-title">Your own project or CoWork</div>
-                    <p class="choice-card-desc">Install PLGen in your Claude Project once — it's there every session, no prompt to paste each time.</p>
-                    <a href="/install" class="btn">Install PLGen →</a>
-                </div>
-                <div class="choice-card">
-                    <div class="choice-card-title">Standalone PLGen</div>
-                    <p class="choice-card-desc">Use the standalone PLGen Claude Project for future sessions — open it, type plgen init, and go.</p>
-                    <a href="https://claude.ai/project/019cc4f6-0085-7263-8b02-4a7118a4fb43" target="_blank" rel="noopener" class="btn btn-ghost">Open PLGen in Claude →</a>
-                </div>
-            </div>
+            <p style="font-size:13px; color:var(--gray-dark); margin:40px 0 0;">Want PLGen available for every session going forward, without pasting a prompt each time? <a href="/install" style="color:var(--accent)">See the install guide →</a></p>
         </div>
 
-        <!-- MID + CHATGPT -->
-        <div id="path-mid-chatgpt" class="path-wrap start-hidden">
+        <!-- DONE (universal — same steps regardless of AI tool) -->
+        <div id="path-done-universal" class="path-wrap start-hidden">
             <hr class="section-divider">
             <div class="path-callout">
-                <p>You're already working in ChatGPT — don't switch. Paste the prompt below at the end of your current session. That's it.</p>
-                <p>The estimation process often surfaces where your contribution actually lives: the research questions, the judgment calls, the edits. If the work doesn't feel like yours yet, this is a useful diagnostic.</p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Estimate your split so far</h3>
-                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus the AI? You're not auditing — you're making a good-faith estimate. Write it down before moving to the next step.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>At the end of your next session, paste this prompt</h3>
-                        <p>Fill in your name, today's date, and the split you estimated. Paste it directly into the ChatGPT conversation you've been working in.</p>
-                        <div class="copy-wrap">
-                            <pre id="midChatGPTPrompt" class="copy-pre">Based on our collaboration, generate a Provenance Label v1.2.
-My estimated overall split (including work before this session): [X]% human / [Y]% AI.
-
-@provenance 1.2
-author: [my name]
-date: [today YYYY-MM-DD]
-human: [X]
-ai: [Y]
-tools: [AI name and version]
-note: [one plain sentence describing how we worked together]
-
-Requirements:
-- human + ai must equal 100
-- Use my prior estimate as the baseline
-- Be honest, not flattering
-- Output only the label block above, ready to copy-paste</pre>
-                            <button class="copy-btn" id="copyMidChatGPTBtn" onclick="copyStartPrompt('midChatGPTPrompt','copyMidChatGPTBtn')">Copy</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Review and approve your split</h3>
-                        <p>ChatGPT may suggest adjustments — the final number is yours. Once you're happy with it, your label is ready to use.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional but recommended for academic work</span></h3>
-                        <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed — not just that you labeled. <a href="/join">Become a member →</a></p>
-                    </div>
-                </div>
-            </div>
-            <p style="font-size:13px; color:var(--gray-dark); margin:40px 0 0;">Want PLGen available for every session going forward?</p>
-            <div class="choice-cards">
-                <div class="choice-card">
-                    <div class="choice-card-title">Your own Custom GPT</div>
-                    <p class="choice-card-desc">Install PLGen in your own Custom GPT once — it's there every session, no prompt to paste each time.</p>
-                    <a href="/install" class="btn">Install PLGen →</a>
-                </div>
-                <div class="choice-card">
-                    <div class="choice-card-title">Standalone PLGen</div>
-                    <p class="choice-card-desc">Use the standalone PLGen Custom GPT for future sessions — open it, type plgen init, and go.</p>
-                    <a href="https://chatgpt.com/g/plgen" target="_blank" rel="noopener" class="btn btn-ghost">Open PLGen in ChatGPT →</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- MID + OTHER -->
-        <div id="path-mid-other" class="path-wrap start-hidden">
-            <hr class="section-divider">
-            <div class="path-callout">
-                <p>You've been using AI and want to start tracking. You don't need logs or history — you estimate the work done so far, then note it in your next session.</p>
-                <p>Using Miro, Notion, Canva, or another embedded tool? <a href="/embedded">See the embedded tools guide →</a></p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Estimate your split so far</h3>
-                        <p>Think honestly: who initiated the ideas? Who made the key decisions? What percentage of what's on the page came from you versus AI? You're not auditing — you're making a good-faith estimate. Write it down.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Open your next AI session with context</h3>
-                        <p>Tell your AI: <em>"We're using Provenance Label standards. I've been working on this for [context]. My estimated split so far is [X]% human / [Y]% AI. Track our contributions in this session."</em></p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Continue your work</h3>
-                        <p>Work normally. The AI will track this session's contributions in context of your earlier estimate.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Generate your label at the end</h3>
-                        <p>Use the prompt on the <a href="/embedded">embedded tools page</a> to generate your label, or ask your AI to generate one based on your overall split. Review and approve.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— optional but recommended for academic work</span></h3>
-                        <p>Registration creates a timestamped, permanent record of your disclosure. For academic or professional contexts, this is how you prove you disclosed. <a href="/join">Become a member →</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DONE + CLAUDE -->
-        <div id="path-done-claude" class="path-wrap start-hidden">
-            <hr class="section-divider">
-            <div class="path-callout">
-                <p>Your work is finished. Open any Claude conversation, paste the prompt below with your split estimate, and you're done.</p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Estimate your split</h3>
-                        <p>Think honestly: who initiated the ideas? Who made the key decisions? Who edited, cut, and shaped the final output? You're not auditing — you're making a good-faith estimate.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Open Claude and paste this prompt</h3>
-                        <p>Open any Claude conversation and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
-                        <div class="copy-wrap">
-                            <pre id="doneClaudePrompt" class="copy-pre">Generate a Provenance Label v1.2 for completed work.
-My estimated split: [X]% human / [Y]% AI.
-
-@provenance 1.2
-author: [my name]
-date: [completion date YYYY-MM-DD]
-human: [X]
-ai: [Y]
-tools: [AI name and version]
-note: [one plain sentence describing how you worked together]
-
-Requirements:
-- human + ai must equal 100
-- Use my estimate above as the split
-- Be honest, not flattering
-- Output only the label block above, ready to copy-paste</pre>
-                            <button class="copy-btn" id="copyDoneClaudeBtn" onclick="copyStartPrompt('doneClaudePrompt','copyDoneClaudeBtn')">Copy</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Review and approve</h3>
-                        <p>Claude may refine the wording of the note — the split is yours to confirm. Once approved, the label is ready.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended for finished work</span></h3>
-                        <p>For finished academic or professional work, registration is how the disclosure becomes verifiable — a timestamped public record, not just a label you added. <a href="/join">Become a member →</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DONE + CHATGPT -->
-        <div id="path-done-chatgpt" class="path-wrap start-hidden">
-            <hr class="section-divider">
-            <div class="path-callout">
-                <p>Your work is finished. Open any ChatGPT conversation, paste the prompt below with your split estimate, and you're done.</p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Estimate your split</h3>
-                        <p>Think honestly: who initiated the ideas? Who made the key decisions? Who edited, cut, and shaped the final output? You're not auditing — you're making a good-faith estimate.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Open ChatGPT and paste this prompt</h3>
-                        <p>Open any ChatGPT conversation and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
-                        <div class="copy-wrap">
-                            <pre id="doneChatGPTPrompt" class="copy-pre">Generate a Provenance Label v1.2 for completed work.
-My estimated split: [X]% human / [Y]% AI.
-
-@provenance 1.2
-author: [my name]
-date: [completion date YYYY-MM-DD]
-human: [X]
-ai: [Y]
-tools: [AI name and version]
-note: [one plain sentence describing how you worked together]
-
-Requirements:
-- human + ai must equal 100
-- Use my estimate above as the split
-- Be honest, not flattering
-- Output only the label block above, ready to copy-paste</pre>
-                            <button class="copy-btn" id="copyDoneChatGPTBtn" onclick="copyStartPrompt('doneChatGPTPrompt','copyDoneChatGPTBtn')">Copy</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Review and approve</h3>
-                        <p>ChatGPT may refine the wording of the note — the split is yours to confirm. Once approved, the label is ready.</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num"></div>
-                    <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended for finished work</span></h3>
-                        <p>For finished academic or professional work, registration is how the disclosure becomes verifiable — a timestamped public record, not just a label you added. <a href="/join">Become a member →</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DONE + OTHER -->
-        <div id="path-done-other" class="path-wrap start-hidden">
-            <hr class="section-divider">
-            <div class="path-callout">
-                <p>Your work is finished. You can still generate an honest label — estimate your split from memory, then generate it with any AI tool.</p>
+                <p>Your work is finished. Open any AI conversation, paste the prompt below with your split estimate, and you're done.</p>
                 <p>Used Miro, Notion, Canva, or another embedded tool? <a href="/embedded">See the embedded tools guide →</a></p>
             </div>
             <div class="steps">
@@ -612,15 +369,41 @@ Requirements:
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Generate your label</h3>
-                        <p>Use the prompt on the <a href="/embedded">embedded tools page</a>, or open any AI and ask: <em>"Generate a Provenance Label v1.2 for this work. My split estimate is [X]% human / [Y]% AI. Tools used: [tool names]."</em></p>
+                        <h3>Open your AI and paste this prompt</h3>
+                        <p>Open any AI conversation — Claude, ChatGPT, or anything else — and paste the prompt below. Fill in your split estimate, name, and the date the work was completed.</p>
+                        <div class="copy-wrap">
+                            <pre id="doneUniversalPrompt" class="copy-pre">Generate a Provenance Label v1.2 for completed work.
+My estimated split: [X]% human / [Y]% AI.
+
+@provenance 1.2
+author: [my name]
+date: [completion date YYYY-MM-DD]
+human: [X]
+ai: [Y]
+tools: [AI name and version]
+note: [one plain sentence describing how you worked together]
+
+Requirements:
+- human + ai must equal 100
+- Use my estimate above as the split
+- Be honest, not flattering
+- Output only the label block above, ready to copy-paste</pre>
+                            <button class="copy-btn" id="copyDoneUniversalBtn" onclick="copyStartPrompt('doneUniversalPrompt','copyDoneUniversalBtn')">Copy</button>
+                        </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num"></div>
                     <div class="step-content">
-                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended</span></h3>
-                        <p>For finished work — especially academic or professional — registration is how the disclosure becomes verifiable. <a href="/join">Become a member →</a></p>
+                        <h3>Review and approve</h3>
+                        <p>Your AI may refine the wording of the note — the split is yours to confirm. Once approved, the label is ready.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num"></div>
+                    <div class="step-content">
+                        <h3>Register your label <span style="font-weight:normal; color:var(--gray-dark); font-size:14px;">— recommended for finished work</span></h3>
+                        <p>For finished academic or professional work, registration is how the disclosure becomes verifiable — a timestamped public record, not just a label you added. <a href="/join">Become a member →</a></p>
                     </div>
                 </div>
             </div>
@@ -652,6 +435,18 @@ Requirements:
                 tool = null;
                 document.querySelectorAll('#q2 .start-opt').forEach(function(b) { b.classList.remove('selected'); });
             }
+
+            // Mid/done: the steps are identical regardless of AI tool (verified —
+            // the Claude and ChatGPT prompts were byte-for-byte the same before this
+            // was collapsed). Skip the tool question and go straight to the answer.
+            if (s === 'mid' || s === 'done') {
+                document.getElementById('q2').classList.add('start-hidden');
+                showPath(s + '-universal');
+                return;
+            }
+
+            // New: tool choice still matters here — it decides which real setup
+            // link to show (Claude Project vs. Custom GPT vs. manual).
             document.getElementById('q2').classList.remove('start-hidden');
             document.getElementById('q2').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
