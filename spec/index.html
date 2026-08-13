@@ -233,6 +233,44 @@
 
         <hr class="section-divider">
 
+        <h2 id="confidence">Label Confidence</h2>
+        <p>Registered labels display a computed confidence score — <strong>PLGen-C</strong> — alongside the label itself. It isn't a judgment on whether your work is good, or even whether the label is true. It's a measure of how much of the disclosure can currently be independently verified versus taken on your word.</p>
+        <p>The score is computed from a fixed set of observable signals — not estimated or judged by an AI. Each signal is checked independently and shown with a symbol:</p>
+
+        <table class="field-table">
+            <thead>
+                <tr><th>Symbol</th><th>Meaning</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>✓</td><td>Signal fully satisfied.</td></tr>
+                <tr><td>△</td><td>Partially satisfied, or not yet independently confirmable.</td></tr>
+                <tr><td>✗</td><td>Not satisfied, or the information needed isn't present.</td></tr>
+            </tbody>
+        </table>
+
+        <p style="font-size:15px; color:var(--gray-dark);">A △ doesn't necessarily mean something's wrong. Some signals depend on session data that not every AI platform exposes yet — it means that piece can't be independently confirmed right now, not that the disclosure itself is false.</p>
+
+        <h3>What's measured</h3>
+        <table class="field-table">
+            <thead>
+                <tr><th>Signal</th><th>What it checks</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Session initialization</td><td>Whether the disclosure session was set up before the work began, versus reconstructed afterward.</td></tr>
+                <tr><td>Checksum integrity</td><td>Whether the label carries a token confirming it wasn't edited after the AI generated it.</td></tr>
+                <tr><td>Token/time plausibility</td><td>Whether the pace of AI output over the session is consistent with a human directing the work.</td></tr>
+                <tr><td>Membership depth</td><td>How many labels this member has registered previously.</td></tr>
+                <tr><td>Work URL resolution</td><td>Whether the linked work actually exists and is reachable.</td></tr>
+                <tr><td>Paste event ratio</td><td>How much of the human-provided input was pasted in versus typed directly.</td></tr>
+                <tr><td>Session gap detection</td><td>Whether there were unusually long pauses during the session.</td></tr>
+                <tr><td>Corroboration</td><td>Independent confirmation from an institution or other verified source, beyond self-report.</td></tr>
+            </tbody>
+        </table>
+
+        <p style="font-size:15px; color:var(--gray-dark);">The exact scoring weights and thresholds are intentionally not published. Publishing them would let the score be gamed rather than earned — what's shown here is what's measured, not how heavily each part counts toward the final number.</p>
+
+        <hr class="section-divider">
+
         <h2>Changelog</h2>
         <table class="field-table">
             <thead>
