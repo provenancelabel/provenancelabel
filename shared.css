@@ -754,8 +754,60 @@ body.spec .registry-body {
 .value { color: #9dd3a8; }
 .directive { color: var(--accent); }
 
+/* ---- Free vs. Membership comparison ---- */
+.tier-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin: 32px 0 8px;
+}
+
+.tier-col {
+    border: 1px solid var(--gray-mid);
+    padding: 28px;
+}
+
+.tier-col-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.tier-col-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.tier-col-desc {
+    font-size: 14px;
+    color: var(--gray-dark);
+    line-height: 1.6;
+}
+
+.tier-col ul {
+    list-style: none;
+    margin: 18px 0 0;
+}
+
+.tier-col li {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-light);
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.tier-col li:last-child { border-bottom: none; }
+.tier-col li::before { content: "→"; color: var(--accent); flex-shrink: 0; }
+
 /* ---- Responsive ---- */
 @media (max-width: 600px) {
+    .tier-compare { grid-template-columns: 1fr; }
     nav { padding: 14px 20px; }
     .page-wrap { padding: 40px 20px 80px; }
     h1 { font-size: 26px; }
