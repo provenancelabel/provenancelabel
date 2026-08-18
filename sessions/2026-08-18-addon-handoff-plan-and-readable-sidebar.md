@@ -34,8 +34,33 @@ Renamed dev/test-era labels now that a professor could plausibly see them:
 
 Committed and pushed.
 
+## clasp filed for later (`provenancelabel#32`)
+Shelton confirmed the manual copy-paste-into-the-editor deploy workflow is working, but wants `clasp` set up once deploy frequency increases (e.g. once the pilot is live and turnaround needs to be fast). Filed, explicitly deferred, not built this session.
+
+## "Issue the label in the sidebar" — real gap found before building anything
+Shelton's next ask: the professor should be able to get a real PL label in the sidebar and apply it to their document, with the doc's last revision showing the latest PL. Before writing code, checked what `POST /api/labels/register` (`plgen-registry/src/routes/labels.js`) actually requires — a real self-reported `human_pct`/`ai_pct` split plus author, nothing the paste-detection signal can supply on its own.
+
+That check surfaced a bigger, real finding: `computeConfidence()` (`plgen-registry/src/confidence.js`) hardcodes S6 (Paste Event Ratio) and S7 (Session Gap Detection) — two of the eight publicly-documented signals behind the real Confidence score — as permanent `{ value: 0.50, status: 'partial' }` placeholders, with a comment saying they're waiting on "session instrumentation not yet available." The Add-on's `analyzeRevisions()` already computes exactly that instrumentation (`paste_ratio`, `paste_events`, `session_gaps`), but it's only ever reached the disconnected `/score` stub — never registration, never `confidence.js`. Shelton's framing ("bring this closer to what the PL is actually doing, not so far off") landed on this: issuing a real `PL-XXXXXX` from the one integration surface capable of resolving S6/S7 for real, while still leaving those two signals as generic "unverified" placeholders, would be a real credibility gap, not a nitpick.
+
+Confirmed the DB side of this: `computeConfidence()` is called at *view* time (`viewer.js:62`) off the stored `labels` row — there's no column for paste/session data at all, so wiring this in is a schema change, not just an endpoint change.
+
+## Form vs. function split (Shelton's explicit call)
+Rather than build the backend wiring now, Shelton drew an explicit line: UI/display work now, database/scoring work later. Scope for this pass:
+
+- **Sidebar UI upgraded** (`Sidebar.html`) with a new "Issue PL Label" section below the existing writing-pattern check: self-report form (author, human/ai split with client-side sum-to-100 validation, AI tools, process notes) and a **"Preview Label"** button that renders the real label format client-side — mirrors `buildLabelText()`'s actual layout (not an invented one) so what's shown matches what a real label will look like, with a placeholder `PL-XXXXXX (preview — not yet registered)` ID and a `Confidence: TBD — calculated at registration` line calling out the still-unwired S6/S7 signals inline.
+- **"Apply Label to Document" button added, deliberately non-functional** — `disabled`, with a `title` tooltip and a caption explaining registration/insertion aren't wired up yet. No `google.script.run` call attached; this is a placeholder for the real flow, not a stub that silently no-ops.
+- Nothing in this pass touches the registry, the DB, or `/register`. Zero network calls added.
+
+Two backend items filed to track the deferred function-side work, rather than leaving it as inline TBD comments only:
+- **`registry#4`** — wire the Add-on's paste/session signal into S6/S7 Confidence scoring (schema migration, `/register` accepting a `revisions` payload and computing server-side, `confidence.js` reading real values with the existing hardcoded partial as fallback for non-Add-on registrations). Also notes `buildLabelText()` still hardcodes a stale `v1.0` header — worth fixing in the same pass.
+- **`provenancelabel#33`** — wire the sidebar's "Preview Label" / "Apply to Document" buttons to a real `/register` call and `DocumentApp` insertion once the above lands, including the still-open free-vs-member tier decision for pilot professors and the "replace on re-issue" design (new immutable `pl_id` each time, doc's native revision history shows the latest without custom timestamp tracking).
+
+Committed and pushed.
+
 ## Open items
 - Execute the domain-install plan above once the professor's IT contact is confirmed — GCP project link, Internal OAuth consent, real deployment, admin-console install.
 - Review the `drive.readonly` OAuth scope for narrowing before that install — flagged as worth a look since the admin console will show requested scopes plainly to whoever approves the push, but not changed this session.
-- Verify the new sidebar renders correctly against a live test deployment (not yet re-run since the rewrite).
+- `registry#4` — S6/S7 Confidence signal wiring (not built).
+- `provenancelabel#33` — real registration + document-insertion wiring for the new sidebar UI (not built).
+- `provenancelabel#32` — clasp setup, deferred until deploy frequency increases (not built).
 - Real domain-wide/pilot install, student data privacy research (SDPC/NDPA), and formalizing the black-box scoring revision remain outstanding from prior sessions.

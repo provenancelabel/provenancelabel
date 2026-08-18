@@ -60,11 +60,102 @@
         padding: 8px;
         margin-top: 6px;
       }
+
+      hr {
+        border: none;
+        border-top: 1px solid #e8eaed;
+        margin: 20px 0;
+      }
+      h2 {
+        font-size: 13px;
+        margin: 0 0 4px;
+      }
+      .subtext {
+        font-size: 11px;
+        color: #5f6368;
+        margin: 0 0 12px;
+      }
+
+      label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: #5f6368;
+        margin: 10px 0 3px;
+      }
+      input[type="text"], input[type="number"], textarea {
+        width: 100%;
+        font-family: inherit;
+        font-size: 12px;
+        padding: 6px 8px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      textarea { resize: vertical; min-height: 50px; }
+      .split-row { display: flex; gap: 8px; }
+      .split-row > div { flex: 1; }
+      .field-error {
+        font-size: 11px;
+        color: #c5221f;
+        margin-top: 6px;
+        display: none;
+      }
+
+      .label-preview {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        white-space: pre-wrap;
+        background: #fff;
+        border: 1px solid #202124;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 14px;
+      }
+
+      .stub-note {
+        font-size: 11px;
+        color: #5f6368;
+        margin-top: 6px;
+      }
+      #apply-btn { margin-top: 14px; margin-bottom: 4px; }
     </style>
   </head>
   <body>
     <button id="run">Check This Document</button>
     <div id="summary"><p>Click the button to check this document's writing pattern.</p></div>
+
+    <hr>
+
+    <h2>Issue PL Label</h2>
+    <p class="subtext">Preview of what this document's label will look like once registration is wired up. Nothing here is sent anywhere yet.</p>
+
+    <label for="f-author">Author</label>
+    <input type="text" id="f-author" placeholder="Your name">
+
+    <div class="split-row">
+      <div>
+        <label for="f-human">Human %</label>
+        <input type="number" id="f-human" min="0" max="100" value="80">
+      </div>
+      <div>
+        <label for="f-ai">AI %</label>
+        <input type="number" id="f-ai" min="0" max="100" value="20">
+      </div>
+    </div>
+    <div class="field-error" id="split-error">Human % and AI % must add up to 100.</div>
+
+    <label for="f-tools">AI tools used <span class="subtext" style="margin:0;">(optional)</span></label>
+    <input type="text" id="f-tools" placeholder="e.g. ChatGPT, Grammarly">
+
+    <label for="f-notes">Process notes <span class="subtext" style="margin:0;">(optional)</span></label>
+    <textarea id="f-notes" placeholder="e.g. Outlined by hand, drafted with AI assistance, revised independently"></textarea>
+
+    <button id="preview-btn">Preview Label</button>
+    <div id="label-preview"></div>
+
+    <button id="apply-btn" disabled title="Not wired up yet — registration and document insertion are backend work, tracked separately.">Apply Label to Document</button>
+    <div class="stub-note">Registering a real PL ID and inserting it into the document aren't wired up yet — this button is a placeholder for that flow.</div>
 
     <script>
       function esc(s) {
@@ -175,6 +266,58 @@
             renderError({ message: error.message, stack: error.stack || '' });
           })
           .testPlgenConnection();
+      });
+
+      // --- Issue PL Label (preview only — no network calls) ---
+      // Mirrors the real label text format (buildLabelText() in
+      // registry/src/routes/labels.js) so this shows what the actual
+      // registered label will look like, not an invented format. Marked
+      // "preview — not registered" throughout since /register isn't
+      // wired in yet (see provenancelabel session log, 2026-08-18).
+      function buildLabelPreview(fields) {
+        var created = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
+        return [
+          'PROVENANCE LABEL v1.2',
+          'ID: PL-XXXXXX (preview — not yet registered)',
+          'Author: ' + (fields.author || 'not specified'),
+          'Created: ' + created,
+          '',
+          'Human contribution: ' + fields.human + '%',
+          'AI contribution:    ' + fields.ai + '%',
+          'AI tools: ' + (fields.tools || 'not specified'),
+          '',
+          'Process: ' + (fields.notes || 'not specified'),
+          '',
+          'Confidence: TBD — calculated at registration (S6/S7 signals',
+          '            from the writing-pattern check above aren’t',
+          '            wired into scoring yet)',
+          '',
+          '-- Preview only. Nothing has been registered or saved.'
+        ].join('\n');
+      }
+
+      document.getElementById('preview-btn').addEventListener('click', function () {
+        var human = parseInt(document.getElementById('f-human').value, 10);
+        var ai = parseInt(document.getElementById('f-ai').value, 10);
+        var errorEl = document.getElementById('split-error');
+        var previewEl = document.getElementById('label-preview');
+
+        if (isNaN(human) || isNaN(ai) || human + ai !== 100) {
+          errorEl.style.display = 'block';
+          previewEl.innerHTML = '';
+          return;
+        }
+        errorEl.style.display = 'none';
+
+        var text = buildLabelPreview({
+          author: document.getElementById('f-author').value.trim(),
+          human: human,
+          ai: ai,
+          tools: document.getElementById('f-tools').value.trim(),
+          notes: document.getElementById('f-notes').value.trim()
+        });
+
+        previewEl.innerHTML = '<div class="label-preview">' + esc(text) + '</div>';
       });
     </script>
   </body>
