@@ -57,10 +57,18 @@ Two backend items filed to track the deferred function-side work, rather than le
 
 Committed and pushed.
 
+## `provenancelabel#33` built same day — real registration wired in
+Shelton had separately been talking to Gemini in the doc about closing this exact gap; Gemini (correctly, working blind without the actual source) asked for the endpoint/payload docs to write the `UrlFetchApp` call. Answered directly instead of relaying through Gemini, since the real spec was already read earlier this session (`registry/src/routes/labels.js`), and built it:
+
+- **`Code.gs`**: new `issueLabel(fields)` — validates, POSTs to `POST /api/labels/register`, **free tier only** (no `x-plgen-key` — this Add-on issues on behalf of whoever's running it, e.g. a pilot professor, never the developer's own account; resolves the tier question left open earlier). New `applyLabelToDocument(issuedLabel)` — inserts the issued label at the top of the doc via `DocumentApp`, wrapped in `⟦PLGEN-LABEL-START/END⟧` sentinel paragraphs so re-applying **replaces** the block instead of stacking duplicates (with a guard against leaving the body with zero children). Each "Issue Label" click registers a genuinely new `pl_id` (confirmed via the registry's `nextPlId()`), so the doc's own native revision history ends up showing the latest PL in its latest revision — no custom timestamp logic needed, as planned.
+- **`Sidebar.html`**: reworked into the two-step flow actually requested — "Issue Label" now calls `issueLabel()` for real and shows the actual returned `pl_id`/tier/content; "Apply Label to Document" stays disabled until something's been issued, then calls `applyLabelToDocument()` with that result. Replaced the earlier client-only mock preview entirely (superseded, not kept alongside).
+
+Commented on and closed `provenancelabel#33` — this was its full scope. `registry#4` (feeding the paste/session signal into the registered label's Confidence score) remains separately open and unaffected; today's registration is plain self-report, same as the site's `/new` form.
+
 ## Open items
 - Execute the domain-install plan above once the professor's IT contact is confirmed — GCP project link, Internal OAuth consent, real deployment, admin-console install.
 - Review the `drive.readonly` OAuth scope for narrowing before that install — flagged as worth a look since the admin console will show requested scopes plainly to whoever approves the push, but not changed this session.
 - `registry#4` — S6/S7 Confidence signal wiring (not built).
-- `provenancelabel#33` — real registration + document-insertion wiring for the new sidebar UI (not built).
 - `provenancelabel#32` — clasp setup, deferred until deploy frequency increases (not built).
+- Not yet verified against a live test deployment — the register/apply flow has been written but not run in a real Doc yet.
 - Real domain-wide/pilot install, student data privacy research (SDPC/NDPA), and formalizing the black-box scoring revision remain outstanding from prior sessions.

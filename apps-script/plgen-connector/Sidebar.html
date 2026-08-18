@@ -128,7 +128,7 @@
     <hr>
 
     <h2>Issue PL Label</h2>
-    <p class="subtext">Preview of what this document's label will look like once registration is wired up. Nothing here is sent anywhere yet.</p>
+    <p class="subtext">Issues a real, free-tier Provenance Label from your own self-reported split — not linked to the writing-pattern check above yet (see registry#4).</p>
 
     <label for="f-author">Author</label>
     <input type="text" id="f-author" placeholder="Your name">
@@ -151,11 +151,11 @@
     <label for="f-notes">Process notes <span class="subtext" style="margin:0;">(optional)</span></label>
     <textarea id="f-notes" placeholder="e.g. Outlined by hand, drafted with AI assistance, revised independently"></textarea>
 
-    <button id="preview-btn">Preview Label</button>
-    <div id="label-preview"></div>
+    <button id="issue-btn">Issue Label</button>
+    <div id="issue-result"></div>
 
-    <button id="apply-btn" disabled title="Not wired up yet — registration and document insertion are backend work, tracked separately.">Apply Label to Document</button>
-    <div class="stub-note">Registering a real PL ID and inserting it into the document aren't wired up yet — this button is a placeholder for that flow.</div>
+    <button id="apply-btn" disabled title="Issue a label first.">Apply Label to Document</button>
+    <div class="stub-note" id="apply-note">Issue a label above, then apply it to insert it into this document. Re-applying replaces whatever was inserted last time.</div>
 
     <script>
       function esc(s) {
@@ -268,56 +268,116 @@
           .testPlgenConnection();
       });
 
-      // --- Issue PL Label (preview only — no network calls) ---
-      // Mirrors the real label text format (buildLabelText() in
-      // registry/src/routes/labels.js) so this shows what the actual
-      // registered label will look like, not an invented format. Marked
-      // "preview — not registered" throughout since /register isn't
-      // wired in yet (see provenancelabel session log, 2026-08-18).
-      function buildLabelPreview(fields) {
-        var created = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
-        return [
-          'PROVENANCE LABEL v1.2',
-          'ID: PL-XXXXXX (preview — not yet registered)',
-          'Author: ' + (fields.author || 'not specified'),
-          'Created: ' + created,
-          '',
-          'Human contribution: ' + fields.human + '%',
-          'AI contribution:    ' + fields.ai + '%',
-          'AI tools: ' + (fields.tools || 'not specified'),
-          '',
-          'Process: ' + (fields.notes || 'not specified'),
-          '',
-          'Confidence: TBD — calculated at registration (S6/S7 signals',
-          '            from the writing-pattern check above aren’t',
-          '            wired into scoring yet)',
-          '',
-          '-- Preview only. Nothing has been registered or saved.'
-        ].join('\n');
+      // --- Issue PL Label (real: POST /register, no doc mutation) ---
+      // --- Apply Label to Document (real: DocumentApp insert/replace) ---
+      // Two explicit steps, matching the requested flow: issue a real label
+      // first (shown in the sidebar), then choose separately whether to
+      // apply it to the document. lastIssuedLabel holds the most recent
+      // successful issueLabel() result so Apply can send it back as-is —
+      // Code.gs stays stateless between calls.
+      var lastIssuedLabel = null;
+
+      function readLabelFields() {
+        return {
+          author: document.getElementById('f-author').value.trim(),
+          human: document.getElementById('f-human').value,
+          ai: document.getElementById('f-ai').value,
+          tools: document.getElementById('f-tools').value.trim(),
+          notes: document.getElementById('f-notes').value.trim()
+        };
       }
 
-      document.getElementById('preview-btn').addEventListener('click', function () {
-        var human = parseInt(document.getElementById('f-human').value, 10);
-        var ai = parseInt(document.getElementById('f-ai').value, 10);
-        var errorEl = document.getElementById('split-error');
-        var previewEl = document.getElementById('label-preview');
+      function validSplit(fields) {
+        var human = parseInt(fields.human, 10);
+        var ai = parseInt(fields.ai, 10);
+        return !isNaN(human) && !isNaN(ai) && human + ai === 100;
+      }
 
-        if (isNaN(human) || isNaN(ai) || human + ai !== 100) {
+      function setApplyEnabled(enabled) {
+        var btn = document.getElementById('apply-btn');
+        btn.disabled = !enabled;
+        btn.title = enabled ? '' : 'Issue a label first.';
+      }
+
+      document.getElementById('issue-btn').addEventListener('click', function () {
+        var fields = readLabelFields();
+        var errorEl = document.getElementById('split-error');
+        var resultEl = document.getElementById('issue-result');
+
+        if (!fields.author) {
+          resultEl.innerHTML = '<p class="field-error" style="display:block;">Author is required.</p>';
+          return;
+        }
+        if (!validSplit(fields)) {
           errorEl.style.display = 'block';
-          previewEl.innerHTML = '';
+          resultEl.innerHTML = '';
           return;
         }
         errorEl.style.display = 'none';
 
-        var text = buildLabelPreview({
-          author: document.getElementById('f-author').value.trim(),
-          human: human,
-          ai: ai,
-          tools: document.getElementById('f-tools').value.trim(),
-          notes: document.getElementById('f-notes').value.trim()
-        });
+        var btn = document.getElementById('issue-btn');
+        btn.disabled = true;
+        resultEl.innerHTML = '<p>Issuing…</p>';
+        lastIssuedLabel = null;
+        setApplyEnabled(false);
 
-        previewEl.innerHTML = '<div class="label-preview">' + esc(text) + '</div>';
+        google.script.run
+          .withSuccessHandler(function (result) {
+            btn.disabled = false;
+            if (result && result.ok) {
+              lastIssuedLabel = result;
+              renderIssueResult(result);
+              setApplyEnabled(true);
+            } else {
+              renderIssueError(result);
+            }
+          })
+          .withFailureHandler(function (error) {
+            btn.disabled = false;
+            renderIssueError({ message: error.message });
+          })
+          .issueLabel(fields);
+      });
+
+      function renderIssueResult(result) {
+        var html = badge(result.tier === 'registered' ? 'Registered' : 'Issued — free tier', 'measured');
+        html += '<div class="label-preview">' + esc(
+          result.tier === 'registered'
+            ? 'Provenance Label: ' + result.plId + '\n' + result.url
+            : (result.labelText || result.plId)
+        ) + '</div>';
+        if (result.upgradeCta) {
+          html += '<p class="subtext">' + esc(result.upgradeCta) + '</p>';
+        }
+        document.getElementById('issue-result').innerHTML = html;
+      }
+
+      function renderIssueError(result) {
+        var html = badge('Error', 'error');
+        html += '<p>' + esc((result && result.message) || 'Unknown error issuing label.') + '</p>';
+        document.getElementById('issue-result').innerHTML = html;
+      }
+
+      document.getElementById('apply-btn').addEventListener('click', function () {
+        if (!lastIssuedLabel) return;
+
+        var btn = document.getElementById('apply-btn');
+        var note = document.getElementById('apply-note');
+        btn.disabled = true;
+        note.textContent = 'Applying…';
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            setApplyEnabled(true);
+            note.textContent = (result && result.ok)
+              ? 'Applied ' + result.plId + ' to this document — re-issuing and re-applying will replace it.'
+              : 'Failed to apply: ' + ((result && result.message) || 'unknown error.');
+          })
+          .withFailureHandler(function (error) {
+            setApplyEnabled(true);
+            note.textContent = 'Failed to apply: ' + error.message;
+          })
+          .applyLabelToDocument(lastIssuedLabel);
       });
     </script>
   </body>

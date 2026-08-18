@@ -1,12 +1,27 @@
 // PLGen Connector — M2 prototype.
 // Reads the active Doc's revision history, sends a summary to the registry's
 // scoring endpoint, and renders the resulting paste/session signal as a
-// plain-language summary in the sidebar. Not linked to a real pl_id or
-// registration yet — see sessions/2026-07-13-gemini-gem-google-ecosystem.md
-// and sessions/2026-07-14-m2-heuristic-and-strategy-reset.md for context.
+// plain-language summary in the sidebar. Can also issue a real free-tier PL
+// label via the registry's /register endpoint and insert it into the doc.
+// The paste/session signal above is NOT yet fed into that registration (see
+// registry#4) — issuing a label today is plain self-report only, same as
+// the site's /new form. See sessions/2026-07-13-gemini-gem-google-ecosystem.md,
+// 2026-07-14-m2-heuristic-and-strategy-reset.md, and 2026-08-18-addon-handoff-
+// plan-and-readable-sidebar.md for context.
 
 var REGISTRY_URL = 'https://registry.provenancelabel.org/api/labels/score';
+var REGISTER_URL = 'https://registry.provenancelabel.org/api/labels/register';
 var MAX_REVISIONS_TO_SIZE = 15;
+
+// Deliberately free tier only — this Add-on issues labels on behalf of
+// whoever's running it (e.g. a pilot professor testing on their own doc),
+// never the developer's own member account. No x-plgen-key is ever sent.
+// Revisit if/when there's a real per-installation member auth story.
+
+// Marks the paragraph range in the doc that holds the currently-applied
+// label, so re-issuing replaces it instead of stacking duplicates.
+var LABEL_START_MARKER = '⟦PLGEN-LABEL-START⟧';
+var LABEL_END_MARKER   = '⟦PLGEN-LABEL-END⟧';
 
 // Simple trigger — must stay UI-only. Runs before the user has granted
 // scopes, so anything touching Drive/UrlFetchApp belongs in testPlgenConnection().
@@ -60,6 +75,135 @@ function testPlgenConnection() {
       stack: err.stack || ''
     };
   }
+}
+
+// Called from the sidebar's "Issue Label" button. Registers a real free-tier
+// PL label via the registry's self-report endpoint — does NOT touch the
+// document. The sidebar holds onto the returned object and passes it back
+// to applyLabelToDocument() if the user chooses to insert it.
+function issueLabel(fields) {
+  try {
+    var validationError = validateLabelFields(fields);
+    if (validationError) return { ok: false, message: validationError };
+
+    var payload = {
+      author: fields.author,
+      human_pct: parseInt(fields.human, 10),
+      ai_pct: parseInt(fields.ai, 10)
+    };
+    if (fields.tools) payload.ai_tools = fields.tools;
+    if (fields.notes) payload.process_notes = fields.notes;
+
+    var resp = UrlFetchApp.fetch(REGISTER_URL, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    var status = resp.getResponseCode();
+    var parsed = null;
+    try {
+      parsed = JSON.parse(resp.getContentText());
+    } catch (parseErr) {
+      parsed = null;
+    }
+
+    if (status !== 200 || !parsed || !parsed.pl_id) {
+      return {
+        ok: false,
+        message: 'Registration failed (HTTP ' + status + ').',
+        rawResponse: resp.getContentText()
+      };
+    }
+
+    return {
+      ok: true,
+      plId: parsed.pl_id,
+      tier: parsed.tier,
+      url: parsed.url || null,
+      labelText: parsed.label_text || null,
+      upgradeCta: parsed.upgrade_cta || null,
+      createdAt: parsed.created_at
+    };
+  } catch (err) {
+    return { ok: false, message: err.message, stack: err.stack || '' };
+  }
+}
+
+// Called from the sidebar's "Apply Label to Document" button, passed the
+// object issueLabel() returned. Inserts (or replaces) a marked block at the
+// top of the doc. Re-issuing and re-applying replaces the old block rather
+// than stacking a new one, so the doc's own (native) revision history shows
+// the latest PL in its latest revision without any custom timestamp logic.
+function applyLabelToDocument(issuedLabel) {
+  try {
+    if (!issuedLabel || !issuedLabel.ok || !issuedLabel.plId) {
+      return { ok: false, message: 'No issued label to apply — issue one first.' };
+    }
+
+    var body = DocumentApp.getActiveDocument().getBody();
+    removeExistingLabelBlock(body);
+
+    var lines = [LABEL_START_MARKER];
+    if (issuedLabel.tier === 'registered') {
+      lines.push('Provenance Label: ' + issuedLabel.plId);
+      lines.push(issuedLabel.url);
+    } else {
+      lines = lines.concat((issuedLabel.labelText || '').split('\n'));
+    }
+    lines.push(LABEL_END_MARKER);
+
+    // Insert at the top of the body, each line its own paragraph, in
+    // reverse so they land in the intended order.
+    for (var i = lines.length - 1; i >= 0; i--) {
+      body.insertParagraph(0, lines[i]);
+    }
+
+    return { ok: true, plId: issuedLabel.plId };
+  } catch (err) {
+    return { ok: false, message: err.message, stack: err.stack || '' };
+  }
+}
+
+function validateLabelFields(fields) {
+  if (!fields || !fields.author) return 'Author is required.';
+  var human = parseInt(fields.human, 10);
+  var ai = parseInt(fields.ai, 10);
+  if (isNaN(human) || isNaN(ai) || human + ai !== 100) {
+    return 'Human % and AI % must add up to 100.';
+  }
+  return null;
+}
+
+// Removes a previously-inserted label block, if one exists, so re-applying
+// replaces it instead of duplicating. Guards against leaving the body with
+// zero children (Docs requires at least one paragraph).
+function removeExistingLabelBlock(body) {
+  var startIndex = findMarkerParagraphIndex(body, LABEL_START_MARKER);
+  if (startIndex === -1) return;
+
+  var endIndex = findMarkerParagraphIndex(body, LABEL_END_MARKER);
+  if (endIndex === -1 || endIndex < startIndex) endIndex = startIndex;
+
+  var removingEverything = startIndex === 0 && endIndex === body.getNumChildren() - 1;
+  if (removingEverything) body.appendParagraph('');
+
+  for (var i = endIndex; i >= startIndex; i--) {
+    body.removeChild(body.getChild(i));
+  }
+}
+
+function findMarkerParagraphIndex(body, marker) {
+  var n = body.getNumChildren();
+  for (var i = 0; i < n; i++) {
+    var child = body.getChild(i);
+    if (child.getType() === DocumentApp.ElementType.PARAGRAPH &&
+        child.asParagraph().getText().indexOf(marker) !== -1) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 function buildRevisionSummary(docId) {
