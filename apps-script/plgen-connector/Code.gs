@@ -1,7 +1,9 @@
-// PLGen Connector — M1 connectivity spike.
-// Reads the active Doc's revision history and round-trips a summary to the
-// registry's stub scoring endpoint. No paste-detection logic yet — see
-// sessions/2026-07-13-gemini-gem-google-ecosystem.md for the full context.
+// PLGen Connector — M2 prototype.
+// Reads the active Doc's revision history, sends a summary to the registry's
+// scoring endpoint, and renders the resulting paste/session signal as a
+// plain-language summary in the sidebar. Not linked to a real pl_id or
+// registration yet — see sessions/2026-07-13-gemini-gem-google-ecosystem.md
+// and sessions/2026-07-14-m2-heuristic-and-strategy-reset.md for context.
 
 var REGISTRY_URL = 'https://registry.provenancelabel.org/api/labels/score';
 var MAX_REVISIONS_TO_SIZE = 15;
@@ -11,7 +13,7 @@ var MAX_REVISIONS_TO_SIZE = 15;
 function onOpen(e) {
   DocumentApp.getUi()
     .createAddonMenu()
-    .addItem('Test PLGen Connection', 'showSidebar')
+    .addItem('Check Writing Pattern', 'showSidebar')
     .addToUi();
 }
 
@@ -21,26 +23,42 @@ function onInstall(e) {
 
 function showSidebar() {
   var output = HtmlService.createHtmlOutputFromFile('Sidebar')
-    .setTitle('PLGen Connection Test');
+    .setTitle('PLGen Writing Pattern Check');
   DocumentApp.getUi().showSidebar(output);
 }
 
 // Called from the sidebar button via google.script.run. Every failure mode
-// (auth, Drive API, network, non-2xx) is caught and returned as a string
-// rather than thrown, since this is a diagnostic tool.
+// (auth, Drive API, network, non-2xx) is caught and returned as a plain
+// object rather than thrown, since the sidebar needs a result either way —
+// never a rejected promise — to render something useful.
 function testPlgenConnection() {
   try {
     var docId = DocumentApp.getActiveDocument().getId();
     var summary = buildRevisionSummary(docId);
     var result = postToRegistry(summary);
 
-    return 'Doc ID: ' + docId + '\n' +
-      'Revisions found: ' + summary.revision_count + '\n\n' +
-      '--- Payload sent ---\n' + JSON.stringify(summary, null, 2) + '\n\n' +
-      '--- Registry response ---\n' +
-      'HTTP ' + result.status + '\n' + result.body;
+    var parsed = null;
+    try {
+      parsed = JSON.parse(result.body);
+    } catch (parseErr) {
+      parsed = null; // registry returned non-JSON (e.g. an error page) — leave rawResponse for debugging
+    }
+
+    return {
+      ok: true,
+      docId: docId,
+      revisionCount: summary.revision_count,
+      httpStatus: result.status,
+      pasteSignal: (parsed && parsed.paste_signal) || null,
+      rawPayload: summary,
+      rawResponse: result.body
+    };
   } catch (err) {
-    return 'ERROR: ' + err.message + '\n\n' + (err.stack || '');
+    return {
+      ok: false,
+      message: err.message,
+      stack: err.stack || ''
+    };
   }
 }
 
