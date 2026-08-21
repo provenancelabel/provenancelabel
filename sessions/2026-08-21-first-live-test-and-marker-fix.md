@@ -58,9 +58,14 @@ Shelton reframed the actual problem instead of picking a tier: a professor's rea
 ## Verified live: combined content renders correctly
 `PL-000025` applied with a check run first — self-reported block followed by the Writing Pattern Check section, exactly as composed, correct signal data (5 revisions, 3 session breaks, no paste-like insertions). Full loop (Check → Issue → Apply, combined content, replace-on-reissue, no visible mechanism artifacts) is now proven end to end.
 
+## Domain-install: real correction to the 2026-08-18 plan
+Picked up the domain-install work. Caught a real gap in the original plan before Shelton acted on it: "Internal" OAuth consent-screen audience only exists for, and only grants access within, the Google Workspace organization that owns the GCP project. A GCP project created under Shelton's own account (or `empathylab.io`) can never be set Internal for the professor's domain — they're different orgs. The original plan's "developer does the GCP steps, their admin installs by Deployment ID" phrasing glossed over this; the GCP/OAuth setup itself has to happen on an account inside the professor's org, not just the final install step.
+
+Wrote `apps-script/plgen-connector/DOMAIN-INSTALL.md` — a standalone doc Shelton can hand directly to the professor's IT contact, splitting the work correctly: developer hands over the three source files only; everything GCP/OAuth/Admin-console happens on their side. Not executed this session (no IT contact engaged yet) — this is the corrected plan, ready to hand off.
+
 ## Open items
 - `registry#4` — S6/S7 signal → Confidence *scoring* wiring (registry-side; today's work only puts the signal in the applied document text, not the registered record).
 - Tier decision (free vs. real member account for the professor) — reopened by the Confidence-scope question, not resolved; deferred again while this content change was more immediately actionable.
 - `provenancelabel#32` — clasp setup (not built).
-- Domain-install plan for the professor handoff (not executed) — the natural next step now that the Add-on itself is fully proven.
-- `drive.readonly` scope narrowing (not reviewed).
+- Hand `DOMAIN-INSTALL.md` to the professor's IT contact and walk through it — not yet executed, waiting on that contact.
+- `drive.readonly` scope narrowing — worth revisiting now that an admin will actually see the requested scopes during install (not reviewed).
