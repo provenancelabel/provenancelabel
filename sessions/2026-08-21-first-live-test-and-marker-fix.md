@@ -55,10 +55,12 @@ Shelton reframed the actual problem instead of picking a tier: a professor's rea
 - **`Code.gs`**: `applyLabelToDocument()` simplified to take the pre-composed text directly rather than the `issuedLabel` object — it no longer needs to know either result's shape, just inserts and NamedRange-tags whatever text it's given.
 - **Explicitly not sent to the registry** — `/register` still only ever receives the plain self-report; nothing about the signal reaches the `pl_id` record itself. Real Confidence integration stays scoped to `registry#4`, untouched today.
 
+## Verified live: combined content renders correctly
+`PL-000025` applied with a check run first — self-reported block followed by the Writing Pattern Check section, exactly as composed, correct signal data (5 revisions, 3 session breaks, no paste-like insertions). Full loop (Check → Issue → Apply, combined content, replace-on-reissue, no visible mechanism artifacts) is now proven end to end.
+
 ## Open items
 - `registry#4` — S6/S7 signal → Confidence *scoring* wiring (registry-side; today's work only puts the signal in the applied document text, not the registered record).
 - Tier decision (free vs. real member account for the professor) — reopened by the Confidence-scope question, not resolved; deferred again while this content change was more immediately actionable.
 - `provenancelabel#32` — clasp setup (not built).
-- Domain-install plan for the professor handoff (not executed).
+- Domain-install plan for the professor handoff (not executed) — the natural next step now that the Add-on itself is fully proven.
 - `drive.readonly` scope narrowing (not reviewed).
-- Re-test live: issue + apply with a check run first, confirm the combined content renders correctly in a real doc (not yet run since this change).
