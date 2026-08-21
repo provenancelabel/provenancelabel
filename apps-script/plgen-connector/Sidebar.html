@@ -128,7 +128,7 @@
     <hr>
 
     <h2>Issue PL Label</h2>
-    <p class="subtext">Issues a real, free-tier Provenance Label from your own self-reported split — not linked to the writing-pattern check above yet (see registry#4).</p>
+    <p class="subtext">Issues a real, free-tier Provenance Label from your own self-reported split. When applied, the writing-pattern check above is included alongside it — run that check first for a fuller record.</p>
 
     <label for="f-author">Author</label>
     <input type="text" id="f-author" placeholder="Your name">
@@ -155,7 +155,7 @@
     <div id="issue-result"></div>
 
     <button id="apply-btn" disabled title="Issue a label first.">Apply Label to Document</button>
-    <div class="stub-note" id="apply-note">Issue a label above, then apply it to insert it into this document. Re-applying replaces whatever was inserted last time.</div>
+    <div class="stub-note" id="apply-note">Issue a label above, then apply it to insert it into this document, along with the writing-pattern check above (run "Check This Document" first for a fuller record). Re-applying replaces whatever was inserted last time.</div>
 
     <script>
       function esc(s) {
@@ -190,6 +190,7 @@
       }
 
       function renderSuccess(result) {
+        lastCheckResult = result; // available to the Issue/Apply flow below
         var html = '';
         var sig = result.pasteSignal;
 
@@ -275,7 +276,17 @@
       // apply it to the document. lastIssuedLabel holds the most recent
       // successful issueLabel() result so Apply can send it back as-is —
       // Code.gs stays stateless between calls.
+      //
+      // The self-reported split alone isn't a compelling signal to a
+      // professor — a student misreporting it just types different numbers.
+      // The writing-pattern check (lastCheckResult, from the button above)
+      // is observed from the doc's own edit history instead of asserted, so
+      // Apply appends it to what's inserted. This is content composition
+      // only — nothing here is sent to the registry; /register still only
+      // ever sees the plain self-report (see registry#4 for wiring the
+      // signal into actual Confidence scoring, which this is not).
       var lastIssuedLabel = null;
+      var lastCheckResult = null;
 
       function readLabelFields() {
         return {
@@ -358,6 +369,31 @@
         document.getElementById('issue-result').innerHTML = html;
       }
 
+      // Builds the full text block to insert: the self-reported label,
+      // then a Writing Pattern Check section from the last "Check This
+      // Document" run (if any). Composed here, once, so Code.gs doesn't
+      // need to know the shape of either result — it just inserts text.
+      function buildAppliedContent(issuedLabel, checkResult) {
+        var lines = issuedLabel.tier === 'registered'
+          ? ['Provenance Label: ' + issuedLabel.plId, issuedLabel.url]
+          : (issuedLabel.labelText || '').split('\n');
+
+        lines.push('');
+        lines.push('— Writing Pattern Check —');
+
+        var sig = checkResult && checkResult.pasteSignal;
+        if (!sig) {
+          lines.push('Not checked this session — run "Check This Document" above before issuing for a fuller record.');
+        } else if (sig.status === 'insufficient_data') {
+          lines.push('Not enough saved revision history yet to check writing patterns.');
+        } else {
+          describeSignal(sig).forEach(function (line) { lines.push(line); });
+          lines.push('(Rough, provisional signal — not calibrated, not a verdict. Supports self-report, does not replace it.)');
+        }
+
+        return lines.join('\n');
+      }
+
       document.getElementById('apply-btn').addEventListener('click', function () {
         if (!lastIssuedLabel) return;
 
@@ -366,18 +402,21 @@
         btn.disabled = true;
         note.textContent = 'Applying…';
 
+        var content = buildAppliedContent(lastIssuedLabel, lastCheckResult);
+        var plId = lastIssuedLabel.plId;
+
         google.script.run
           .withSuccessHandler(function (result) {
             setApplyEnabled(true);
             note.textContent = (result && result.ok)
-              ? 'Applied ' + result.plId + ' to this document — re-issuing and re-applying will replace it.'
+              ? 'Applied ' + plId + ' to this document — re-issuing and re-applying will replace it.'
               : 'Failed to apply: ' + ((result && result.message) || 'unknown error.');
           })
           .withFailureHandler(function (error) {
             setApplyEnabled(true);
             note.textContent = 'Failed to apply: ' + error.message;
           })
-          .applyLabelToDocument(lastIssuedLabel);
+          .applyLabelToDocument(content);
       });
     </script>
   </body>

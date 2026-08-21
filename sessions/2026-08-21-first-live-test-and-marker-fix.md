@@ -44,8 +44,21 @@ Deleted the orphaned `PL-000022` block by hand (one-time cleanup from the mechan
 
 **Full chain now verified live, end to end**: Check → Issue → Apply → re-Issue → re-Apply-replaces. This closes out the verification goal this whole session was chasing.
 
+## Real product course-correction: self-report alone isn't compelling to a professor
+With the chain working and "get this in the professor's hands" back on the table, asked whether that also starts surfacing Confidence scores. Checked `viewer.js` directly rather than assume: `computeConfidence()` is never even called for free-tier labels — the viewer route 403s before reaching it — and the Add-on issues free tier only, by design. So under the current shape, the professor's labels can't show a Confidence score regardless of `registry#4`'s status; that's a separate, bigger decision (real member account/key) than just installing the Add-on.
+
+Shelton reframed the actual problem instead of picking a tier: a professor's real worry is students misreporting the split, and self-report can't solve that — someone who wants to lie just types different numbers. The one thing in this whole system that isn't asserted is the writing-pattern signal ("Check This Document"), because it's observed from the doc's own edit history. His call: stop routing everything through the self-report form, and start surfacing what's already being computed in the background instead — specifically, put the check's output **into the applied label itself**.
+
+**Built, no registry changes**: this is Add-on-side content composition only — deliberately decoupled from `registry#4` and the tier question, so it didn't need either decision resolved first.
+
+- **`Sidebar.html`**: "Check This Document" now stashes its result in `lastCheckResult`. New `buildAppliedContent(issuedLabel, checkResult)` composes the full text to insert — the self-reported label, then a "— Writing Pattern Check —" section reusing the existing `describeSignal()` copy (with its "not calibrated, not a verdict" caveat carried over), or a note that no check was run this session. This is composed once, client-side.
+- **`Code.gs`**: `applyLabelToDocument()` simplified to take the pre-composed text directly rather than the `issuedLabel` object — it no longer needs to know either result's shape, just inserts and NamedRange-tags whatever text it's given.
+- **Explicitly not sent to the registry** — `/register` still only ever receives the plain self-report; nothing about the signal reaches the `pl_id` record itself. Real Confidence integration stays scoped to `registry#4`, untouched today.
+
 ## Open items
-- `registry#4` — S6/S7 signal → Confidence wiring (not built).
+- `registry#4` — S6/S7 signal → Confidence *scoring* wiring (registry-side; today's work only puts the signal in the applied document text, not the registered record).
+- Tier decision (free vs. real member account for the professor) — reopened by the Confidence-scope question, not resolved; deferred again while this content change was more immediately actionable.
 - `provenancelabel#32` — clasp setup (not built).
 - Domain-install plan for the professor handoff (not executed).
 - `drive.readonly` scope narrowing (not reviewed).
+- Re-test live: issue + apply with a check run first, confirm the combined content renders correctly in a real doc (not yet run since this change).

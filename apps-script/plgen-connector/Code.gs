@@ -2,12 +2,16 @@
 // Reads the active Doc's revision history, sends a summary to the registry's
 // scoring endpoint, and renders the resulting paste/session signal as a
 // plain-language summary in the sidebar. Can also issue a real free-tier PL
-// label via the registry's /register endpoint and insert it into the doc.
-// The paste/session signal above is NOT yet fed into that registration (see
-// registry#4) — issuing a label today is plain self-report only, same as
-// the site's /new form. See sessions/2026-07-13-gemini-gem-google-ecosystem.md,
-// 2026-07-14-m2-heuristic-and-strategy-reset.md, and 2026-08-18-addon-handoff-
-// plan-and-readable-sidebar.md for context.
+// label via the registry's /register endpoint and apply it to the doc —
+// the applied content includes that writing-pattern signal (composed
+// client-side, see Sidebar.html) alongside the self-report, since a
+// self-reported split alone isn't a compelling signal to a skeptical
+// reader. That signal is NOT sent to the registry itself, though — /register
+// only ever sees the plain self-report; feeding it into actual Confidence
+// scoring is separate, unstarted work (registry#4). See
+// sessions/2026-07-13-gemini-gem-google-ecosystem.md, 2026-07-14-m2-
+// heuristic-and-strategy-reset.md, and 2026-08-18-addon-handoff-plan-and-
+// readable-sidebar.md for context.
 
 var REGISTRY_URL = 'https://registry.provenancelabel.org/api/labels/score';
 var REGISTER_URL = 'https://registry.provenancelabel.org/api/labels/register';
@@ -133,24 +137,25 @@ function issueLabel(fields) {
 }
 
 // Called from the sidebar's "Apply Label to Document" button, passed the
-// object issueLabel() returned. Inserts the label at the top of the doc and
-// tags it with a NamedRange. Re-issuing and re-applying replaces the old
-// block rather than stacking a new one, so the doc's own (native) revision
-// history shows the latest PL in its latest revision without any custom
-// timestamp logic — and nothing about the mechanism is visible on the page.
-function applyLabelToDocument(issuedLabel) {
+// already-composed text to insert (the self-reported label plus a Writing
+// Pattern Check section — see buildAppliedContent() in Sidebar.html; this
+// function doesn't need to know either result's shape, just the final
+// text). Inserts it at the top of the doc and tags it with a NamedRange.
+// Re-issuing and re-applying replaces the old block rather than stacking a
+// new one, so the doc's own (native) revision history shows the latest PL
+// in its latest revision without any custom timestamp logic — and nothing
+// about the mechanism is visible on the page.
+function applyLabelToDocument(content) {
   try {
-    if (!issuedLabel || !issuedLabel.ok || !issuedLabel.plId) {
-      return { ok: false, message: 'No issued label to apply — issue one first.' };
+    if (!content) {
+      return { ok: false, message: 'Nothing to apply — issue a label first.' };
     }
 
     var doc  = DocumentApp.getActiveDocument();
     var body = doc.getBody();
     removeExistingLabelBlock(doc, body);
 
-    var lines = issuedLabel.tier === 'registered'
-      ? ['Provenance Label: ' + issuedLabel.plId, issuedLabel.url]
-      : (issuedLabel.labelText || '').split('\n');
+    var lines = content.split('\n');
 
     // Insert at the top of the body, each line its own paragraph, in
     // reverse so they land in the intended order.
@@ -166,7 +171,7 @@ function applyLabelToDocument(issuedLabel) {
     inserted.forEach(function (p) { rangeBuilder.addElement(p); });
     doc.addNamedRange(LABEL_RANGE_NAME, rangeBuilder.build());
 
-    return { ok: true, plId: issuedLabel.plId };
+    return { ok: true };
   } catch (err) {
     return { ok: false, message: err.message, stack: err.stack || '' };
   }
