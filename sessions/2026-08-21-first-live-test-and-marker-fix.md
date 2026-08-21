@@ -37,8 +37,14 @@ Also confirms, as expected: the label still shows `PROVENANCE LABEL v1.0` — th
 
 **Shelton's follow-up, adopted instead**: why insert marker text into the document at all? Correct call — the only reason text-search was used was that Apps Script executions are stateless between calls, so *something* persistent was needed to relocate the block next time. Switched to Apps Script's native `NamedRange` (`Document.addNamedRange()` / `getNamedRanges()`) instead — this tags the inserted paragraphs with retrievable metadata Docs stores about the range, not a character on the page. `removeExistingLabelBlock()` now looks up the tag directly rather than scanning body text for markers, and nothing is ever written into the document purely for bookkeeping. Genuinely cleaner than the white-text workaround, not just a visual patch over the same mechanism.
 
+## Replace path verified — with one real gotcha along the way
+Second live test: issued `PL-000023`, applied it — but `PL-000022` was still there too, just with 23 pasted above it. Not a bug in the new code: `PL-000022` had been applied under the *old* text-marker mechanism, before the `NamedRange` rewrite, so it was never tagged — `removeExistingLabelBlock()` correctly found nothing to remove. `PL-000023` was the first block ever created *with* a real tag.
+
+Deleted the orphaned `PL-000022` block by hand (one-time cleanup from the mechanism switch, not something the code needs to handle), issued a third label, applied again — **`PL-000024` correctly replaced `PL-000023` inline**, single block remained. That's the actual proof point for the replace-not-duplicate design, and it holds.
+
+**Full chain now verified live, end to end**: Check → Issue → Apply → re-Issue → re-Apply-replaces. This closes out the verification goal this whole session was chasing.
+
 ## Open items
-- Re-test the full chain with the NamedRange rewrite in place — nothing should appear in the doc but the label content itself, and re-issue → re-apply should replace the block rather than duplicating (the replace path hasn't been exercised live yet, only the first-insert path — now doubly true since the removal mechanism changed).
 - `registry#4` — S6/S7 signal → Confidence wiring (not built).
 - `provenancelabel#32` — clasp setup (not built).
 - Domain-install plan for the professor handoff (not executed).
