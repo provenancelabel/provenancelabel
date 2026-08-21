@@ -33,12 +33,12 @@ Also confirms, as expected: the label still shows `PROVENANCE LABEL v1.0` — th
 ## Bug found: sentinel markers were visible
 `⟦PLGEN-LABEL-START⟧` / `⟦PLGEN-LABEL-END⟧` showed up as literal visible text at the top of the doc — never styled out of view when built. They were only ever meant to be bookkeeping so re-applying can find and replace the block, not something a professor reads.
 
-**Fix**: kept the exact insert/find-by-text/remove logic as-is (it just proved itself live) — only added styling to the two marker paragraphs specifically (`setFontSize(1)`, white foreground) so they're invisible to a reader but still findable via `getText()` for the replace-on-reissue logic. Deliberately did not switch to a structurally different approach (e.g. Apps Script `NamedRange`) for this — lower risk to fix the one thing that broke than to swap in an untested mechanism right after the first thing that worked.
+**First fix attempt (superseded same session)**: kept the text-search logic as-is, shrunk + white-out the two marker paragraphs (`setFontSize(1)`, white foreground) so they're invisible but still findable via `getText()`.
 
-**Known trade-off, not fixed**: white-on-white text can show up as a visible artifact on a non-white page background, in some PDF exports, or to screen readers. Acceptable for a first pilot pass; worth revisiting if it becomes a real complaint.
+**Shelton's follow-up, adopted instead**: why insert marker text into the document at all? Correct call — the only reason text-search was used was that Apps Script executions are stateless between calls, so *something* persistent was needed to relocate the block next time. Switched to Apps Script's native `NamedRange` (`Document.addNamedRange()` / `getNamedRanges()`) instead — this tags the inserted paragraphs with retrievable metadata Docs stores about the range, not a character on the page. `removeExistingLabelBlock()` now looks up the tag directly rather than scanning body text for markers, and nothing is ever written into the document purely for bookkeeping. Genuinely cleaner than the white-text workaround, not just a visual patch over the same mechanism.
 
 ## Open items
-- Re-test the full chain with the marker fix in place — confirm markers are actually invisible now, and specifically confirm re-issue → re-apply *replaces* the block rather than duplicating (the replace path hasn't been exercised live yet, only the first-insert path).
+- Re-test the full chain with the NamedRange rewrite in place — nothing should appear in the doc but the label content itself, and re-issue → re-apply should replace the block rather than duplicating (the replace path hasn't been exercised live yet, only the first-insert path — now doubly true since the removal mechanism changed).
 - `registry#4` — S6/S7 signal → Confidence wiring (not built).
 - `provenancelabel#32` — clasp setup (not built).
 - Domain-install plan for the professor handoff (not executed).

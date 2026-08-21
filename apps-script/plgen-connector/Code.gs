@@ -18,10 +18,11 @@ var MAX_REVISIONS_TO_SIZE = 15;
 // never the developer's own member account. No x-plgen-key is ever sent.
 // Revisit if/when there's a real per-installation member auth story.
 
-// Marks the paragraph range in the doc that holds the currently-applied
-// label, so re-issuing replaces it instead of stacking duplicates.
-var LABEL_START_MARKER = '⟦PLGEN-LABEL-START⟧';
-var LABEL_END_MARKER   = '⟦PLGEN-LABEL-END⟧';
+// Tags the paragraphs holding the currently-applied label with a Docs
+// NamedRange (metadata Apps Script can look up later — not text, never
+// rendered on the page), so re-issuing replaces the old block instead of
+// stacking duplicates without inserting any marker content into the doc.
+var LABEL_RANGE_NAME = 'plgenLabel';
 
 // Simple trigger — must stay UI-only. Runs before the user has granted
 // scopes, so anything touching Drive/UrlFetchApp belongs in testPlgenConnection().
@@ -132,39 +133,38 @@ function issueLabel(fields) {
 }
 
 // Called from the sidebar's "Apply Label to Document" button, passed the
-// object issueLabel() returned. Inserts (or replaces) a marked block at the
-// top of the doc. Re-issuing and re-applying replaces the old block rather
-// than stacking a new one, so the doc's own (native) revision history shows
-// the latest PL in its latest revision without any custom timestamp logic.
+// object issueLabel() returned. Inserts the label at the top of the doc and
+// tags it with a NamedRange. Re-issuing and re-applying replaces the old
+// block rather than stacking a new one, so the doc's own (native) revision
+// history shows the latest PL in its latest revision without any custom
+// timestamp logic — and nothing about the mechanism is visible on the page.
 function applyLabelToDocument(issuedLabel) {
   try {
     if (!issuedLabel || !issuedLabel.ok || !issuedLabel.plId) {
       return { ok: false, message: 'No issued label to apply — issue one first.' };
     }
 
-    var body = DocumentApp.getActiveDocument().getBody();
-    removeExistingLabelBlock(body);
+    var doc  = DocumentApp.getActiveDocument();
+    var body = doc.getBody();
+    removeExistingLabelBlock(doc, body);
 
-    var lines = [LABEL_START_MARKER];
-    if (issuedLabel.tier === 'registered') {
-      lines.push('Provenance Label: ' + issuedLabel.plId);
-      lines.push(issuedLabel.url);
-    } else {
-      lines = lines.concat((issuedLabel.labelText || '').split('\n'));
-    }
-    lines.push(LABEL_END_MARKER);
+    var lines = issuedLabel.tier === 'registered'
+      ? ['Provenance Label: ' + issuedLabel.plId, issuedLabel.url]
+      : (issuedLabel.labelText || '').split('\n');
 
     // Insert at the top of the body, each line its own paragraph, in
-    // reverse so they land in the intended order. The two marker lines are
-    // bookkeeping only — shrunk and colored to match the page background so
-    // they're findable via getText() (used by removeExistingLabelBlock) but
-    // not something a reader sees at the top of their document.
+    // reverse so they land in the intended order.
+    var inserted = [];
     for (var i = lines.length - 1; i >= 0; i--) {
-      var para = body.insertParagraph(0, lines[i]);
-      if (lines[i] === LABEL_START_MARKER || lines[i] === LABEL_END_MARKER) {
-        para.editAsText().setFontSize(1).setForegroundColor('#ffffff');
-      }
+      inserted.unshift(body.insertParagraph(0, lines[i]));
     }
+
+    // Tag the whole block with a NamedRange so a later apply can find and
+    // remove exactly this content — no marker text goes into the document
+    // itself, visible or otherwise.
+    var rangeBuilder = doc.newRange();
+    inserted.forEach(function (p) { rangeBuilder.addElement(p); });
+    doc.addNamedRange(LABEL_RANGE_NAME, rangeBuilder.build());
 
     return { ok: true, plId: issuedLabel.plId };
   } catch (err) {
@@ -182,34 +182,26 @@ function validateLabelFields(fields) {
   return null;
 }
 
-// Removes a previously-inserted label block, if one exists, so re-applying
-// replaces it instead of duplicating. Guards against leaving the body with
-// zero children (Docs requires at least one paragraph).
-function removeExistingLabelBlock(body) {
-  var startIndex = findMarkerParagraphIndex(body, LABEL_START_MARKER);
-  if (startIndex === -1) return;
+// Removes a previously-applied label block, if one exists, using the
+// NamedRange tag left by a prior apply (no marker text to search for).
+// Guards against leaving the body with zero children (Docs requires at
+// least one paragraph).
+function removeExistingLabelBlock(doc, body) {
+  var namedRanges = doc.getNamedRanges(LABEL_RANGE_NAME);
 
-  var endIndex = findMarkerParagraphIndex(body, LABEL_END_MARKER);
-  if (endIndex === -1 || endIndex < startIndex) endIndex = startIndex;
+  namedRanges.forEach(function (namedRange) {
+    var elements = namedRange.getRange().getRangeElements().map(function (rangeElement) {
+      return rangeElement.getElement();
+    });
 
-  var removingEverything = startIndex === 0 && endIndex === body.getNumChildren() - 1;
-  if (removingEverything) body.appendParagraph('');
+    if (body.getNumChildren() - elements.length < 1) body.appendParagraph('');
 
-  for (var i = endIndex; i >= startIndex; i--) {
-    body.removeChild(body.getChild(i));
-  }
-}
-
-function findMarkerParagraphIndex(body, marker) {
-  var n = body.getNumChildren();
-  for (var i = 0; i < n; i++) {
-    var child = body.getChild(i);
-    if (child.getType() === DocumentApp.ElementType.PARAGRAPH &&
-        child.asParagraph().getText().indexOf(marker) !== -1) {
-      return i;
+    // Remove in reverse document order so earlier indices stay valid.
+    for (var i = elements.length - 1; i >= 0; i--) {
+      body.removeChild(elements[i]);
     }
-  }
-  return -1;
+    namedRange.remove(); // clears the tag itself; content is already gone
+  });
 }
 
 function buildRevisionSummary(docId) {
