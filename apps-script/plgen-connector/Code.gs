@@ -155,9 +155,15 @@ function applyLabelToDocument(issuedLabel) {
     lines.push(LABEL_END_MARKER);
 
     // Insert at the top of the body, each line its own paragraph, in
-    // reverse so they land in the intended order.
+    // reverse so they land in the intended order. The two marker lines are
+    // bookkeeping only — shrunk and colored to match the page background so
+    // they're findable via getText() (used by removeExistingLabelBlock) but
+    // not something a reader sees at the top of their document.
     for (var i = lines.length - 1; i >= 0; i--) {
-      body.insertParagraph(0, lines[i]);
+      var para = body.insertParagraph(0, lines[i]);
+      if (lines[i] === LABEL_START_MARKER || lines[i] === LABEL_END_MARKER) {
+        para.editAsText().setFontSize(1).setForegroundColor('#ffffff');
+      }
     }
 
     return { ok: true, plId: issuedLabel.plId };
