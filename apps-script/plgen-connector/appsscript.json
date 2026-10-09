@@ -13,7 +13,7 @@
   ],
   "addOns": {
     "common": {
-      "name": "PLGen Writing Check",
+      "name": "Provenance Label",
       "logoUrl": "https://provenancelabel.org/graphics/pl-logo.png"
     }
   },

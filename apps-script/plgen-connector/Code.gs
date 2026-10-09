@@ -30,9 +30,18 @@ var LABEL_RANGE_NAME = 'plgenLabel';
 
 // Simple trigger — must stay UI-only. Runs before the user has granted
 // scopes, so anything touching Drive/UrlFetchApp belongs in testPlgenConnection().
+//
+// Deliberately createMenu(), not createAddonMenu(): the template-doc-copy
+// distribution path (see googleinstall/) means every pilot tester gets their
+// own independent bound script the moment they copy the doc — there's no
+// Marketplace install or Test Deployment pairing to rely on. createMenu()
+// puts a plain top-level "PLGen" menu in the bar with zero deployment
+// ceremony, which createAddonMenu() doesn't guarantee outside the formal
+// add-on framework. If this project is ever actually published as an
+// Add-on, this is the one line to swap back.
 function onOpen(e) {
   DocumentApp.getUi()
-    .createAddonMenu()
+    .createMenu('Provenance')
     .addItem('Check Writing Pattern', 'showSidebar')
     .addToUi();
 }
@@ -43,7 +52,7 @@ function onInstall(e) {
 
 function showSidebar() {
   var output = HtmlService.createHtmlOutputFromFile('Sidebar')
-    .setTitle('PLGen Writing Pattern Check');
+    .setTitle('Provenance — Writing Pattern Check');
   DocumentApp.getUi().showSidebar(output);
 }
 
@@ -210,26 +219,51 @@ function removeExistingLabelBlock(doc, body) {
 }
 
 function buildRevisionSummary(docId) {
+  // pageSize 200 to match the registry's own MAX_REVISIONS defensive cap
+  // (paste-detection.js) — Drive.Revisions.list has no orderBy/newest-first
+  // option, and on a doc with a lot of history it can silently omit older
+  // revisions from the response entirely (per Drive API docs), so a small
+  // pageSize risked missing recent activity outright rather than just
+  // truncating old history.
   var page = Drive.Revisions.list(docId, {
     fields: 'revisions(id,modifiedTime,lastModifyingUser,exportLinks),nextPageToken',
-    pageSize: 25
+    pageSize: 200
   });
   var revisions = page.revisions || [];
 
   var token = ScriptApp.getOAuthToken();
-  var sized = 0;
 
-  var summarized = revisions.map(function (rev) {
+  // Revisions come back oldest-first with no way to ask for the reverse.
+  // Only the most recent MAX_REVISIONS_TO_SIZE get sized (fetching a plain-
+  // text export per revision isn't free) — deliberately the *last* N here,
+  // not the first N: analyzeRevisions() on the registry side drops any
+  // revision with size_chars: null entirely, so sizing the oldest N (as
+  // this used to do) meant anything recent — including a paste that just
+  // happened — was invisible to paste detection, not just less precise.
+  var startIndex = Math.max(0, revisions.length - MAX_REVISIONS_TO_SIZE);
+
+  var summarized = revisions.map(function (rev, i) {
     var entry = {
       id: rev.id,
       modified_time: rev.modifiedTime,
-      size_chars: null
+      size_chars: null,
+      // TEMP diagnostic (2026-08-21) — chasing why some revisions never get
+      // sized. 'skipped' = outside the sizing window, 'no_export_link' =
+      // Drive gave this revision no text/plain exportLinks entry at all,
+      // 'fetch:<code>' = we had a link and hit it, here's what came back.
+      // Strip this once the size_chars gap is actually diagnosed.
+      debug_size_status: 'skipped'
     };
 
     var exportUrl = rev.exportLinks && rev.exportLinks['text/plain'];
-    if (exportUrl && sized < MAX_REVISIONS_TO_SIZE) {
-      entry.size_chars = fetchRevisionTextSize(exportUrl, token);
-      sized++;
+    if (i >= startIndex) {
+      if (exportUrl) {
+        var fetched = fetchRevisionTextSize(exportUrl, token);
+        entry.size_chars = fetched.size_chars;
+        entry.debug_size_status = 'fetch:' + fetched.status;
+      } else {
+        entry.debug_size_status = 'no_export_link';
+      }
     }
 
     return entry;
@@ -252,7 +286,11 @@ function fetchRevisionTextSize(exportUrl, token) {
     muteHttpExceptions: true
   });
 
-  return resp.getResponseCode() === 200 ? resp.getContentText().length : null;
+  var code = resp.getResponseCode();
+  return {
+    size_chars: code === 200 ? resp.getContentText().length : null,
+    status: code
+  };
 }
 
 function postToRegistry(summary) {

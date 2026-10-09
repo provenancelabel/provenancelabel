@@ -3,6 +3,11 @@
   <head>
     <base target="_top">
     <style>
+      :root {
+        --pl-accent: #c8481a;
+        --pl-black: #1a1a1a;
+        --pl-mono: 'Courier New', Courier, monospace;
+      }
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 13px;
@@ -10,6 +15,25 @@
         padding: 12px;
         color: #202124;
       }
+
+      .pl-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 12px;
+        margin-bottom: 14px;
+        border-bottom: 2px solid var(--pl-accent);
+      }
+      .pl-header img { width: 22px; height: 22px; display: block; flex: none; }
+      .pl-header .pl-wordmark {
+        font-family: var(--pl-mono);
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 0.06em;
+        line-height: 1.3;
+        color: var(--pl-black);
+      }
+
       button {
         font-family: inherit;
         font-size: 13px;
@@ -21,6 +45,25 @@
         background: #f8f9fa;
       }
       button:disabled { cursor: default; opacity: 0.6; }
+
+      #issue-btn, #apply-btn {
+        background: var(--pl-accent);
+        border-color: var(--pl-accent);
+        color: #fff;
+        font-weight: 600;
+      }
+      #issue-btn:disabled, #apply-btn:disabled { background: #f8f9fa; border-color: #dadce0; color: #202124; }
+
+      .pl-footer {
+        font-family: var(--pl-mono);
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        color: #9aa0a6;
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 10px;
+        border-top: 1px solid #e8eaed;
+      }
 
       #summary p { margin: 0 0 10px; }
 
@@ -67,7 +110,9 @@
         margin: 20px 0;
       }
       h2 {
-        font-size: 13px;
+        font-family: var(--pl-mono);
+        font-size: 12px;
+        letter-spacing: 0.04em;
         margin: 0 0 4px;
       }
       .subtext {
@@ -122,6 +167,11 @@
     </style>
   </head>
   <body>
+    <div class="pl-header">
+      <img src="https://provenancelabel.org/graphics/pl-logo-circle-boarder.png" alt="">
+      <div class="pl-wordmark">PROVENANCE<br>LABEL</div>
+    </div>
+
     <button id="run">Check This Document</button>
     <div id="summary"><p>Click the button to check this document's writing pattern.</p></div>
 
@@ -156,6 +206,8 @@
 
     <button id="apply-btn" disabled title="Issue a label first.">Apply Label to Document</button>
     <div class="stub-note" id="apply-note">Issue a label above, then apply it to insert it into this document, along with the writing-pattern check above (run "Check This Document" first for a fuller record). Re-applying replaces whatever was inserted last time.</div>
+
+    <div class="pl-footer">provenancelabel.org</div>
 
     <script>
       function esc(s) {
