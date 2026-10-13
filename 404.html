@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page not found — Provenance Label</title>
+    <link rel="stylesheet" href="/shared.css">
+    <script>
+      // Labels print their short address, provenancelabel.org/PL-000123, but
+      // label pages live on the registry. GitHub Pages serves this page for any
+      // unknown address, so forward label addresses (and their .png images)
+      // there before showing anything.
+      (function () {
+        var m = /^\/(PL-[0-9]{6}(?:\/(?:label|badge)\.png)?)\/?$/i.exec(location.pathname);
+        if (m) location.replace('https://registry.provenancelabel.org/' + m[1].replace(/^pl-/, 'PL-'));
+      })();
+    </script>
+    <style>
+      main { max-width: 560px; margin: 0 auto; padding: 96px 24px; }
+      h1 { font-family: var(--serif, Georgia, serif); font-weight: normal; margin-bottom: 16px; }
+      p { margin-bottom: 12px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Page not found</h1>
+        <p>There's nothing at this address.</p>
+        <p>Looking for a label? Label pages are at <a href="https://registry.provenancelabel.org">registry.provenancelabel.org</a>, followed by the label's ID, for example registry.provenancelabel.org/PL-000123.</p>
+        <p><a href="/">Back to provenancelabel.org</a></p>
+    </main>
+</body>
+</html>
