@@ -37,6 +37,8 @@ TARGET_FILES = [
     "join/index.html",
     "start/index.html",
     "embedded/index.html",
+    "presentations/index.html",
+    "presentations/pl-writer-updates-1/index.html",
     "plgen.txt",
     "custom-gpt/system-prompt-v3.md",
 ]

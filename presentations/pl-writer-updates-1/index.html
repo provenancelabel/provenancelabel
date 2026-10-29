@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PL-Writer Updates #1 — Provenance Label</title>
+    <meta name="description" content="Where PL Writer stands, October 2026.">
+    <link rel="stylesheet" href="../../shared.css">
+    <style>
+        .page-wrap { max-width: 1040px; }
+        .deck-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .deck-head a {
+            font-family: var(--mono);
+            font-size: 13px;
+        }
+
+        /* Slides are drawn on a 1920×1080 canvas and scaled to fit the frame. */
+        .frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border: 1px solid var(--gray-mid);
+        }
+        .canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1920px;
+            height: 1080px;
+            transform-origin: 0 0;
+        }
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 128px 128px 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+        .slide.on { opacity: 1; visibility: visible; }
+        .slide .eyebrow {
+            font-family: var(--mono);
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+        .slide .foot {
+            position: absolute;
+            left: 128px;
+            right: 128px;
+            bottom: 56px;
+            font-family: var(--mono);
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .slide-open { background: var(--white); color: var(--black); gap: 48px; }
+        .slide-open .eyebrow { color: #b03f15; }
+        .slide-open h2 {
+            font-family: var(--serif);
+            font-size: 112px;
+            font-weight: normal;
+            line-height: 1.1;
+            letter-spacing: 0;
+            text-transform: none;
+            color: var(--black);
+            max-width: 1500px;
+            margin: 0;
+        }
+        .slide-open .sub { font-size: 48px; line-height: 1.3; color: #5e5853; margin: 0; }
+        .slide-open .foot { color: #5e5853; border-top: 2px solid var(--gray-mid); padding-top: 28px; }
+
+        .slide-close { background: #1c1a18; color: #f3efe9; gap: 56px; }
+        .slide-close .eyebrow { color: #e2693c; }
+        .slide-close .foot { color: #b5aea6; }
+        .facts { list-style: none; border-bottom: 2px solid #45403b; }
+        .facts li {
+            display: flex;
+            gap: 40px;
+            align-items: baseline;
+            padding: 28px 0;
+            border-top: 2px solid #45403b;
+        }
+        .facts .k {
+            font-family: var(--mono);
+            font-size: 32px;
+            color: #e2693c;
+            width: 220px;
+            flex-shrink: 0;
+        }
+        .facts .v { font-size: 56px; line-height: 1.2; }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            font-family: var(--mono);
+            font-size: 13px;
+        }
+        .controls button {
+            font: inherit;
+            color: var(--black);
+            background: none;
+            border: 1px solid var(--gray-mid);
+            padding: 6px 14px;
+            cursor: pointer;
+        }
+        .controls button:hover:not(:disabled) { border-color: var(--black); }
+        .controls button:disabled { color: var(--gray-mid); cursor: default; }
+        .controls .count { color: var(--gray-dark); margin-left: auto; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .slide { transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo"><img src="/graphics/pl-logo-circle-boarder.png" alt="" class="logo-mark">PROVENANCE LABEL</a>
+        <a href="/spec">Spec</a>
+        <a href="/start">Get Started</a>
+        <a href="/join">Join</a>
+        <a href="https://registry.provenancelabel.org/dashboard">Member Login ↗</a>
+    </nav>
+
+    <div class="page-wrap">
+
+        <header class="deck-head">
+            <h1>PL-Writer Updates #1</h1>
+            <a href="/presentations/">← All presentations</a>
+        </header>
+
+        <div class="frame" id="frame" tabindex="0" aria-roledescription="slide deck" aria-label="PL-Writer Updates #1">
+            <div class="canvas" id="canvas">
+
+                <section class="slide slide-open on" aria-label="Slide 1 of 2">
+                    <p class="eyebrow">PL Writer · October 2026</p>
+                    <h2>Everyone has an AI policy. Nobody can see how the writing was made.</h2>
+                    <p class="sub">Detectors guess. PL Writer records.</p>
+                    <p class="foot">provenancelabel.org</p>
+                </section>
+
+                <section class="slide slide-close" aria-label="Slide 2 of 2">
+                    <p class="eyebrow">Where it stands · October 2026</p>
+                    <ul class="facts">
+                        <li><span class="k">Built</span><span class="v">A working prototype, live on the web</span></li>
+                        <li><span class="k">AI</span><span class="v">Claude today. ChatGPT and Grok next.</span></li>
+                        <li><span class="k">Users</span><span class="v">None outside yet</span></li>
+                        <li><span class="k">Limit</span><span class="v">Records what happens in PL Writer, not text retyped from another window</span></li>
+                    </ul>
+                    <p class="foot">provenancelabel.org</p>
+                </section>
+
+            </div>
+        </div>
+
+        <div class="controls">
+            <button type="button" id="prev">← Prev</button>
+            <button type="button" id="next">Next →</button>
+            <span class="count" id="count">1 / 2</span>
+        </div>
+
+    </div>
+
+    <footer>
+        <span>Provenance Label v1.2 — CC BY 4.0 / MIT</span>
+        <span>
+            <a href="/spec">Spec</a> &nbsp;·&nbsp;
+            <a href="/install">Install</a> &nbsp;·&nbsp;
+            <a href="/embedded">Embedded Tools</a> &nbsp;·&nbsp;
+            <a href="/join">Join</a> &nbsp;·&nbsp;
+            <a href="https://github.com/provenancelabel/provenancelabel" target="_blank">GitHub</a>
+        </span>
+    </footer>
+
+    <script>
+        var frame = document.getElementById('frame');
+        var canvas = document.getElementById('canvas');
+        var slides = canvas.querySelectorAll('.slide');
+        var prev = document.getElementById('prev');
+        var next = document.getElementById('next');
+        var count = document.getElementById('count');
+        var current = 0;
+
+        function fit() {
+            canvas.style.transform = 'scale(' + frame.clientWidth / 1920 + ')';
+        }
+
+        function show(i) {
+            current = Math.max(0, Math.min(slides.length - 1, i));
+            slides.forEach(function (s, j) { s.classList.toggle('on', j === current); });
+            prev.disabled = current === 0;
+            next.disabled = current === slides.length - 1;
+            count.textContent = (current + 1) + ' / ' + slides.length;
+        }
+
+        prev.addEventListener('click', function () { show(current - 1); });
+        next.addEventListener('click', function () { show(current + 1); });
+        frame.addEventListener('click', function () { show(current === slides.length - 1 ? 0 : current + 1); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') show(current + 1);
+            if (e.key === 'ArrowLeft' || e.key === 'PageUp') show(current - 1);
+        });
+
+        new ResizeObserver(fit).observe(frame);
+        fit();
+        show(0);
+    </script>
+
+</body>
+</html>
